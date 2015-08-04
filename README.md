@@ -2,6 +2,8 @@
 
 Douban FM for Ubuntu Touch. 
 
+uApp Explorer: [https://uappexplorer.com/app/douban-fm.ubuntu-dawndiy](https://uappexplorer.com/app/douban-fm.ubuntu-dawndiy)
+
 ## About
 
 An unofficial client of Douban FM. You can select the channels you like to play songs and share it to Sina Weibo.
