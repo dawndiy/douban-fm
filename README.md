@@ -13,6 +13,7 @@ An unofficial client of Douban FM. You can select the channels you like to play 
 
 ## Screenshots
 
+![](screenshots/intr_300x600.png?raw=true)
 ![](screenshots/01.png?raw=true)
 ![](screenshots/02.png?raw=true)
 ![](screenshots/03.png?raw=true)
