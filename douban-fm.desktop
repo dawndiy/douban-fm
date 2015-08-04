@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Douban FM
+Exec=douban-fm
+Icon=douban-fm.png
+Terminal=false
+Type=Application
+X-Ubuntu-Touch=true
+
