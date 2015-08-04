@@ -14,8 +14,6 @@ An unofficial client of Douban FM. You can select the channels you like to play 
 ## Screenshots
 
 ![](screenshots/intro.png?raw=true)
-![](screenshots/info.png?raw=true)
-![](screenshots/300x600.png?raw=true)
 
 ## TODO
 
