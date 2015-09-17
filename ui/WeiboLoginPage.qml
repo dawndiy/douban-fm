@@ -1,5 +1,6 @@
 import QtQuick 2.4
 import Ubuntu.Components 1.2
+import Ubuntu.Web 0.2
 import "../components"
 
 Page {
@@ -33,8 +34,9 @@ Page {
         }
     }
 
-    WeiboWebView {
+    WebView {
         id: webView
+        anchors.fill: parent
         onLoadingChanged: {
             console.debug("[Signal: LoadingChanged]" + url)
             var str = String(url);
