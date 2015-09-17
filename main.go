@@ -149,7 +149,7 @@ func (m *Music) NextWithUser(channelID, userID, expire, token string) doubanfm.S
 		fm := doubanfm.NewDoubanFM()
 		songs, err := fm.Songs(opts)
 		if err != nil || len(songs) == 0 {
-			log.Println(err)
+			log.Println("[ERROR]: network error ", err)
 			return doubanfm.Song{}
 		}
 		m.List = append(m.List, songs...)
@@ -320,7 +320,7 @@ func (m *Music) SyncMusic(channelID, userID, expire, token string, count int) {
 
 			db, err := openDB()
 			if err != nil {
-				log.Println(err)
+				log.Println("[ERROR]: db", err)
 				return
 			}
 
@@ -363,7 +363,7 @@ func (m *Music) SyncMusic(channelID, userID, expire, token string, count int) {
 			log.Println("[WORKER]: loading music")
 			res, err = http.Get(s.URL)
 			if err != nil {
-				log.Println(err)
+				log.Println("[ERROR]: network error ", err)
 				continue
 			}
 			musicData, _ := ioutil.ReadAll(res.Body)
@@ -642,13 +642,13 @@ func (weibo *Weibo) Login(code string) bool {
 
 	res, err := http.PostForm("https://api.weibo.com/oauth2/access_token", data)
 	if err != nil {
-		log.Println(err)
+		log.Println("[ERROR]: weibo login ", err)
 		return false
 	}
 	defer res.Body.Close()
 	json, err := simplejson.NewFromReader(res.Body)
 	if err != nil {
-		log.Println(err)
+		log.Println("[ERROR]: weibo login ", err)
 		return false
 	}
 
@@ -662,13 +662,13 @@ func (weibo *Weibo) Login(code string) bool {
 	api := "https://api.weibo.com/2/users/show.json?access_token=" + weibo.AccessToken + "&uid=" + weibo.UID
 	res, err = http.Get(api)
 	if err != nil {
-		log.Println(err)
+		log.Println("[ERROR]: weibo login ", err)
 		return false
 	}
 	defer res.Body.Close()
 	json, err = simplejson.NewFromReader(res.Body)
 	if err != nil {
-		log.Println(err)
+		log.Println("[ERROR]: weibo login ", err)
 		return false
 	}
 	weibo.ScreenName = json.Get("screen_name").MustString()
@@ -702,12 +702,12 @@ func (weibo *Weibo) Upload(accessToken, weiboStatus, picURL string) {
 	body_writer.Close()
 	res, err := http.Post(api, contentType, body_buf)
 	if err != nil {
-		log.Println(err)
+		log.Println("[ERROR]: weibo post ", err)
 	}
 	defer res.Body.Close()
 
 	body, _ := ioutil.ReadAll(res.Body)
-	log.Println(string(body))
+	log.Println("[RESPONSE]:", string(body))
 
 }
 
