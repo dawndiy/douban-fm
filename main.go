@@ -20,12 +20,13 @@ import (
 
 /* Go-qml 没有 offlineStoragePath 方法 */
 
-var path string = "/home/phablet/.local/share/douban-fm.ubuntu-dawndiy/Databases/"
+// var path string = "/home/phablet/.local/share/douban-fm.ubuntu-dawndiy/Databases/"
 
-// var path string = "/home/dawndiy/.local/share/douban-fm.ubuntu-dawndiy/Databases/"
+var path string = "/home/dawndiy/.local/share/douban-fm.ubuntu-dawndiy/Databases/"
 
 func main() {
-	log.Println("Start")
+	log.Println("==Start==")
+	log.Println("Database Path: ", path)
 	err := qml.Run(run)
 	log.Println(err)
 }
@@ -37,11 +38,12 @@ func run() error {
 	context := engine.Context()
 
 	// set custom data from go to qml
-	context.SetVar("channels", GetChannels())
-	// context.SetVar("song", &Song{})
-	context.SetVar("song", GetSong())
-	context.SetVar("doubanUser", &User{})
-	context.SetVar("weibo", getWeibo())
+	music := &Music{CurrentChannenID: "0"}
+	music.getMusic()
+	context.SetVar("DoubanMusic", music)
+	context.SetVar("DoubanChannels", GetChannels())
+	context.SetVar("DoubanUser", &DoubanUser{})
+	context.SetVar("Weibo", getWeibo())
 
 	component, err := engine.LoadFile("douban-fm.qml")
 	if err != nil {
@@ -54,163 +56,122 @@ func run() error {
 }
 
 // ==================================================
-// Song
+// Douban Music
 // ==================================================
 
-type Song struct {
-	List          []doubanfm.Song
-	Currnt        doubanfm.Song
-	lastChannelID string
+type Music struct {
+	List             []doubanfm.Song
+	CurrentChannenID string
+	isLogin          bool
+	userID           string
+	expire           string
+	token            string
 }
 
-func GetSong() *Song {
-
-	song := new(Song)
-	song.lastChannelID = "0"
-
-	fm := doubanfm.NewDoubanFM()
-	songs, err := fm.Songs()
-	if err != nil {
-		return song
-	}
-
-	song.List = append(song.List, songs...)
-
-	return song
+// Cache music list
+// start a goroutine to speed up loading music list
+func (m *Music) getMusic() {
+	go func(m *Music) {
+		fm := doubanfm.NewDoubanFM()
+		for {
+			if len(m.List) < 8 {
+				if m.isLogin {
+					log.Println("[Worker]: get songs with userinfo to list", len(m.List))
+				} else {
+					log.Println("[Worker]: get songs to list", len(m.List))
+				}
+				opts := getDefaultOpts()
+				opts["channel"] = m.CurrentChannenID
+				if m.isLogin {
+					opts["user_id"] = m.userID
+					opts["expire"] = m.expire
+					opts["token"] = m.token
+				}
+				songs, err := fm.Songs(opts)
+				if err != nil {
+					log.Println("[ERROR]: goroutine", err)
+					time.Sleep(time.Second * 15)
+					continue
+				}
+				m.List = append(m.List, songs...)
+			}
+			time.Sleep(time.Second * 1)
+		}
+	}(m)
 }
 
-// 下一首
-func (song *Song) Next(channelID string) doubanfm.Song {
-
+// Next get next music
+func (m *Music) Next(channelID string) doubanfm.Song {
 	opts := getDefaultOpts()
 	opts["channel"] = channelID
-	log.Println("OPTS: ", opts)
 
-	// 频道是否改变过
-	if song.lastChannelID != channelID {
-		song.Clear()
-		song.lastChannelID = channelID
+	m.isLogin = false
+
+	if channelID != m.CurrentChannenID {
+		m.Clear()
+		m.CurrentChannenID = channelID
 	}
 
-	// 重试 5 次
-	for i := 0; i < 5; i++ {
-		if len(song.List) != 0 {
-			break
-		}
+	if len(m.List) == 0 {
 		fm := doubanfm.NewDoubanFM()
-
 		songs, err := fm.Songs(opts)
-		if err != nil {
-			log.Println(err)
+		if err != nil || len(songs) == 0 {
+			log.Println("[ERROR]: network error ", err)
 			return doubanfm.Song{}
 		}
-		song.List = append(song.List, songs...)
+		m.List = append(m.List, songs...)
 	}
 
-	// 重试依然获取不到
-	if len(song.List) == 0 {
-		return doubanfm.Song{}
-	}
-
-	next := song.List[0]
-	song.Currnt = next
-
-	// print("\n===============\n")
-	// for _, i := range song.List {
-	// 	print(i.Title, ", ")
-	// }
-	// print("\n===============\n")
-	// print("\n NOW:   ", next.Title, "\n")
-
-	song.List = song.List[1:]
-
+	next := m.List[0]
+	m.List = m.List[1:]
 	return next
 }
 
-// 下一首歌, 已登录用户
-func (song *Song) NextWithUser(channelID, userID, expire, token string) doubanfm.Song {
-
+// NextWithUser  Get next music by userinfo
+func (m *Music) NextWithUser(channelID, userID, expire, token string) doubanfm.Song {
 	opts := getDefaultOpts()
 	opts["channel"] = channelID
 	opts["user_id"] = userID
 	opts["expire"] = expire
 	opts["token"] = token
-	log.Println("OPTS: ", opts)
 
-	// 频道是否改变过
-	if song.lastChannelID != channelID {
-		song.Clear()
-		song.lastChannelID = channelID
+	m.isLogin = true
+	m.userID = userID
+	m.expire = expire
+	m.token = token
+
+	if channelID != m.CurrentChannenID {
+		m.Clear()
+		m.CurrentChannenID = channelID
 	}
 
-	// 重试 5 次
-	for i := 0; i < 5; i++ {
-		if len(song.List) != 0 {
-			break
-		}
+	if len(m.List) == 0 {
 		fm := doubanfm.NewDoubanFM()
-
 		songs, err := fm.Songs(opts)
-		if err != nil {
+		if err != nil || len(songs) == 0 {
 			log.Println(err)
 			return doubanfm.Song{}
 		}
-		song.List = append(song.List, songs...)
+		m.List = append(m.List, songs...)
 	}
 
-	// 重试依然获取不到
-	if len(song.List) == 0 {
-		return doubanfm.Song{}
-	}
-
-	next := song.List[0]
-	song.Currnt = next
-
-	// print("\n===============\n")
-	// for _, i := range song.List {
-	// 	print(i.Title, ", ")
-	// }
-	// print("\n===============\n")
-	// print("\n NOW:   ", next.Title, "\n")
-
-	song.List = song.List[1:]
-
+	next := m.List[0]
+	m.List = m.List[1:]
 	return next
 }
 
-// 下一首离线歌曲
-func (song *Song) NextOffMusic() doubanfm.Song {
+// NextOffLineMusic get offline music
+func (m *Music) NextOfflineMusic() doubanfm.Song {
 
-	log.Println("DEBUG: ", path)
-
-	// 数据库目录
-	dataDir, err := os.Open(path)
+	// open database
+	db, err := openDB()
 	if err != nil {
-		log.Println(err)
-		return doubanfm.Song{}
-	}
-	defer dataDir.Close()
-	// 找数据库文件
-	fi, _ := dataDir.Readdir(-1)
-	var dbfile string
-	for _, i := range fi {
-		if strings.Contains(i.Name(), ".sqlite") {
-			dbfile = path + i.Name()
-			break
-		}
-	}
-	if dbfile == "" {
-		// 数据库文件不存在
-		return doubanfm.Song{}
-	}
-	// 操作数据库
-	db, err := sql.Open("sqlite3", dbfile)
-	if err != nil {
-		log.Println("DB_ERROR: ", err)
+		log.Println("[ERROR]: db", err)
 		return doubanfm.Song{}
 	}
 	defer db.Close()
-	// 创建离线数据表
+
+	// create table for music
 	execSQL := `create table if not exists 
 			music(
 				album		text,
@@ -235,6 +196,7 @@ func (song *Song) NextOffMusic() doubanfm.Song {
 			)`
 	db.Exec(execSQL)
 
+	// random query a music
 	execSQL = `select album,
 				  picture,
 				  ssid,
@@ -255,11 +217,10 @@ func (song *Song) NextOffMusic() doubanfm.Song {
 				  picdata,
 				  musicdata
 			from music
-			order by RANDOM()
-	`
+			order by RANDOM()`
 
 	row := db.QueryRow(execSQL)
-	log.Println("==============")
+
 	s := doubanfm.Song{}
 	var picData []byte
 	var musicData []byte
@@ -284,11 +245,11 @@ func (song *Song) NextOffMusic() doubanfm.Song {
 		&musicData,
 	)
 	if err != nil {
-		log.Println("GET_ERR: ", err)
+		log.Println("[ERROR]: scan music", err)
 		return doubanfm.Song{}
 	}
 
-	// picData, musicData 存本地
+	// save picData and musicData to local path
 	surl := strings.Split(s.URL, ".")
 	ftype := surl[len(surl)-1]
 	f, _ := os.Create(path + "music." + ftype)
@@ -302,42 +263,157 @@ func (song *Song) NextOffMusic() doubanfm.Song {
 	f.Write(picData)
 	f.Close()
 	s.Picture = path + "pic." + ftype
-	log.Println(s)
+
+	log.Println("[INFO]:", s.Title)
 
 	time.Sleep(time.Second)
-
 	return s
 }
 
-func (song *Song) SyncCount() int {
+// Sync music
+func (m *Music) SyncMusic(channelID, userID, expire, token string, count int) {
 
-	// 数据库目录
-	dataDir, err := os.Open(path)
-	if err != nil {
-		log.Println(err)
-		return 0
-	}
-	defer dataDir.Close()
-	// 找数据库文件
-	fi, _ := dataDir.Readdir(-1)
-	var dbfile string
-	for _, i := range fi {
-		if strings.Contains(i.Name(), ".sqlite") {
-			dbfile = path + i.Name()
-			break
+	// start a goroutine to sync music to database
+	go func() {
+		// open database
+		db, err := openDB()
+		if err != nil {
+			log.Println("[ERROR]: db", err)
+			return
 		}
-	}
-	if dbfile == "" {
-		// 数据库文件不存在
-		return 0
-	}
-	// 操作数据库
-	db, err := sql.Open("sqlite3", dbfile)
+		// create table for music
+		execSQL := `create table if not exists 
+				music(
+					album		text,
+					picture		text,
+					ssid		text,
+					artist      text,
+					url         text,
+					company     text,
+					title       text,
+					ratingavg   text,
+					length      integer,
+					subtype     text,
+					publictime  text,
+					sid         text,
+					aid         text,
+					sha256      text,
+					kbps        text,
+					albumtitle  text,
+					like        integer,
+					picdata     blob,
+					musicdata   blob
+				)`
+		db.Exec(execSQL)
+		db.Close()
+
+		log.Println("-- 开始离线歌曲 --")
+
+		sameSongsRetry := 3
+
+		for i := 0; i < count; i++ {
+
+			// TODO: change count
+			if m.SyncCount() >= 20 {
+				return
+			}
+
+			db, err := openDB()
+			if err != nil {
+				log.Println(err)
+				return
+			}
+
+			// get songs from star channel
+			s := m.NextWithUser("-3", userID, expire, token)
+			log.Println("[Loading]:", s.Artist, s.Title)
+
+			// check if this song already in database
+			stmt, _ := db.Prepare("select sid from music where sid=?")
+			rows, _ := stmt.Query(s.SID)
+			if rows.Next() {
+				// 已经同步过
+				i--
+				sameSongsRetry--
+				if sameSongsRetry < 0 {
+					rows.Close()
+					stmt.Close()
+					break
+				}
+				time.Sleep(time.Second * 5)
+				rows.Close()
+				stmt.Close()
+				continue
+			}
+			rows.Close()
+			stmt.Close()
+
+			// get album picture
+			log.Println("[WORKER]: loading album picture")
+			res, err := http.Get(s.Picture)
+			if err != nil {
+				log.Println("[ERROR]:", err)
+				continue
+			}
+			picData, _ := ioutil.ReadAll(res.Body)
+			res.Body.Close()
+			log.Println("[WORKER]: album picture OK")
+
+			// get music
+			log.Println("[WORKER]: loading music")
+			res, err = http.Get(s.URL)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+			musicData, _ := ioutil.ReadAll(res.Body)
+			res.Body.Close()
+			log.Println("[WORKER]: music OK")
+
+			// 存储离线音乐
+			stmt, _ = db.Prepare("insert into music values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+			r, err := stmt.Exec(
+				s.Album,
+				s.Picture,
+				s.SSID,
+				s.Artist,
+				s.URL,
+				s.Company,
+				s.Title,
+				s.RatingAvg,
+				s.Length,
+				s.SubType,
+				s.PublicTime,
+				s.SID,
+				s.AID,
+				s.SHA256,
+				s.Kbps,
+				s.AlbumTitle,
+				s.Like,
+				picData,
+				musicData)
+
+			stmt.Close()
+			log.Println("[Save]:", r, err)
+
+			db.Close()
+
+			time.Sleep(time.Second * 1)
+		}
+	}()
+}
+
+// Offline music count
+func (m *Music) SyncCount() int {
+
+	// open database
+	db, err := openDB()
 	if err != nil {
-		log.Println("DB_ERROR: ", err)
+		log.Println("[ERROR]: db", err)
 		return 0
 	}
 	defer db.Close()
+
 	// 创建离线数据表
 	execSQL := `create table if not exists 
 			music(
@@ -371,32 +447,16 @@ func (song *Song) SyncCount() int {
 	return count
 }
 
-func (song *Song) ClearSync() {
-	log.Println("-------clear")
-	// 数据库目录
-	dataDir, err := os.Open(path)
+// Clear music list
+func (m *Music) Clear() {
+	m.List = []doubanfm.Song{}
+}
+
+// Clear offline music
+func (m *Music) ClearSync() {
+	db, err := openDB()
 	if err != nil {
-		log.Println(err)
-		return
-	}
-	defer dataDir.Close()
-	// 找数据库文件
-	fi, _ := dataDir.Readdir(-1)
-	var dbfile string
-	for _, i := range fi {
-		if strings.Contains(i.Name(), ".sqlite") {
-			dbfile = path + i.Name()
-			break
-		}
-	}
-	if dbfile == "" {
-		// 数据库文件不存在
-		return
-	}
-	// 操作数据库
-	db, err := sql.Open("sqlite3", dbfile)
-	if err != nil {
-		log.Println("DB_ERROR: ", err)
+		log.Println("[ERROR]: db", err)
 		return
 	}
 	defer db.Close()
@@ -405,219 +465,58 @@ func (song *Song) ClearSync() {
 	db.Exec(execSQL)
 }
 
-// 标记喜欢
-func (song *Song) Like(userID, expire, token, songID string) {
+// Mark like this music
+func (m *Music) Like(userID, expire, token, musicID string) {
 
 	opts := getDefaultOpts()
 	opts["user_id"] = userID
 	opts["expire"] = expire
 	opts["token"] = token
-	opts["sid"] = songID
+	opts["sid"] = musicID
 	opts["type"] = "r"
 
 	fm := doubanfm.NewDoubanFM()
 
 	songs, err := fm.Songs(opts)
 	if err == nil && len(songs) != 0 {
-		song.List = append(song.List, songs...)
+		m.List = append(m.List, songs...)
 	}
 }
 
-// 取消标记喜欢
-func (song *Song) Unlike(userID, expire, token, songID string) {
+// Mark dislike this music
+func (m *Music) Dislike(userID, expire, token, musicID string) {
+
 	opts := getDefaultOpts()
 	opts["user_id"] = userID
 	opts["expire"] = expire
 	opts["token"] = token
-	opts["sid"] = songID
+	opts["sid"] = musicID
 	opts["type"] = "u"
 
 	fm := doubanfm.NewDoubanFM()
 
 	songs, err := fm.Songs(opts)
 	if err == nil && len(songs) != 0 {
-		song.List = append(song.List, songs...)
+		m.List = append(m.List, songs...)
 	}
 }
 
-// 标记不再播放
-func (song *Song) Del(userID, expire, token, songID string) {
+// Mark ban this music
+func (m *Music) Ban(userID, expire, token, musicID string) {
+
 	opts := getDefaultOpts()
 	opts["user_id"] = userID
 	opts["expire"] = expire
 	opts["token"] = token
-	opts["sid"] = songID
+	opts["sid"] = musicID
 	opts["type"] = "b"
 
 	fm := doubanfm.NewDoubanFM()
 
 	songs, err := fm.Songs(opts)
 	if err == nil && len(songs) != 0 {
-		song.List = append(song.List, songs...)
+		m.List = append(m.List, songs...)
 	}
-}
-
-// 清除队列
-func (song *Song) Clear() {
-	song.List = []doubanfm.Song{}
-}
-
-// 同步离线歌曲
-func (song *Song) SyncMusic(channelID, userID, expire, token string, count int) {
-
-	log.Println("DEBUG: ", path)
-
-	// 数据库目录
-	dataDir, err := os.Open(path)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	defer dataDir.Close()
-	// 找数据库文件
-	fi, _ := dataDir.Readdir(-1)
-	var dbfile string
-	for _, i := range fi {
-		if strings.Contains(i.Name(), ".sqlite") {
-			dbfile = path + i.Name()
-			break
-		}
-	}
-	if dbfile == "" {
-		// 数据库文件不存在
-		return
-	}
-
-	// --------------------
-	// 匿名协程同步离线歌曲
-	// --------------------
-	go func() {
-		// 操作数据库
-		db, err := sql.Open("sqlite3", dbfile)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		// 创建离线数据表
-		execSQL := `create table if not exists 
-				music(
-					album		text,
-					picture		text,
-					ssid		text,
-					artist      text,
-					url         text,
-					company     text,
-					title       text,
-					ratingavg   text,
-					length      integer,
-					subtype     text,
-					publictime  text,
-					sid         text,
-					aid         text,
-					sha256      text,
-					kbps        text,
-					albumtitle  text,
-					like        integer,
-					picdata     blob,
-					musicdata   blob
-				)`
-		db.Exec(execSQL)
-		db.Close()
-
-		log.Println("-- 开始离线歌曲 --")
-
-		sameSongsRetry := 3
-
-		for i := 0; i < count; i++ {
-
-			// TODO:
-			if song.SyncCount() >= 20 {
-				return
-			}
-
-			db, err := sql.Open("sqlite3", dbfile)
-			if err != nil {
-				log.Println(err)
-				return
-			}
-
-			// 准备离线的歌曲
-			s := song.NextWithUser("-3", userID, expire, token)
-			log.Println(s)
-			stmt, _ := db.Prepare("select sid from music where sid=?")
-			rows, err := stmt.Query(s.SID)
-			log.Println(rows, err)
-			if rows.Next() {
-				// 已经同步过
-				i--
-				sameSongsRetry--
-				if sameSongsRetry < 0 {
-					rows.Close()
-					stmt.Close()
-					break
-				}
-				time.Sleep(time.Second * 5)
-				rows.Close()
-				stmt.Close()
-				continue
-			}
-			rows.Close()
-			stmt.Close()
-
-			// 获取图片数据
-			log.Println("获取图片")
-			res, err := http.Get(s.Picture)
-			if err != nil {
-				log.Println(err)
-				continue
-			}
-			defer res.Body.Close()
-			picData, _ := ioutil.ReadAll(res.Body)
-			log.Println("获取图片 OK")
-
-			// 获取音乐数据
-			log.Println("获取音乐")
-			res, err = http.Get(s.URL)
-			if err != nil {
-				log.Println(err)
-				continue
-			}
-			defer res.Body.Close()
-			musicData, _ := ioutil.ReadAll(res.Body)
-			log.Println("获取音乐 OK")
-
-			// 存储离线音乐
-			stmt, _ = db.Prepare("insert into music values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
-			r, err := stmt.Exec(
-				s.Album,
-				s.Picture,
-				s.SSID,
-				s.Artist,
-				s.URL,
-				s.Company,
-				s.Title,
-				s.RatingAvg,
-				s.Length,
-				s.SubType,
-				s.PublicTime,
-				s.SID,
-				s.AID,
-				s.SHA256,
-				s.Kbps,
-				s.AlbumTitle,
-				s.Like,
-				picData,
-				musicData)
-
-			stmt.Close()
-			log.Println("EXEC: ", r, err)
-
-			db.Close()
-
-			time.Sleep(time.Second * 1)
-		}
-	}()
-
 }
 
 // ==================================================
@@ -633,7 +532,7 @@ func GetChannels() *Channels {
 
 	channels := new(Channels)
 
-	// 从文件读取列表
+	// get list from json file
 	file, err := os.Open("channels.json")
 	if err == nil {
 
@@ -655,7 +554,7 @@ func GetChannels() *Channels {
 		channels.Len = len(chs)
 
 	} else {
-		// 从网络读取列表
+		// get list from internet
 		fm := doubanfm.NewDoubanFM()
 		chs, err := fm.Channels()
 		if err != nil {
@@ -673,14 +572,23 @@ func (ch *Channels) Channel(index int) doubanfm.Channel {
 	return ch.List[index]
 }
 
+func (ch *Channels) ChannelByID(id int) doubanfm.Channel {
+	for _, channel := range ch.List {
+		if channel.ID == id {
+			return channel
+		}
+	}
+	return doubanfm.Channel{}
+}
+
 // ==================================================
 // Login Douban
 // ==================================================
 
-type User struct {
+type DoubanUser struct {
 }
 
-func (user *User) Login(email, password string) *doubanfm.User {
+func (user *DoubanUser) Login(email, password string) *doubanfm.User {
 
 	fm := doubanfm.NewDoubanFM()
 	u, err := fm.Login(email, password)
@@ -698,6 +606,7 @@ func (user *User) Login(email, password string) *doubanfm.User {
 // Weibo
 // ==================================================
 
+// Weibo
 type Weibo struct {
 	Key         string
 	Secret      string
@@ -709,6 +618,7 @@ type Weibo struct {
 	ScreenName  string
 }
 
+// Get Weibo
 func getWeibo() *Weibo {
 
 	weibo := &Weibo{}
@@ -718,6 +628,7 @@ func getWeibo() *Weibo {
 	return weibo
 }
 
+// Login sina weibo
 func (weibo *Weibo) Login(code string) bool {
 
 	// 登录需要 POST 的数据
@@ -747,7 +658,7 @@ func (weibo *Weibo) Login(code string) bool {
 	weibo.IsLogin = true
 	weibo.UID = json.Get("uid").MustString()
 
-	// 获取用户信息
+	// get user information
 	api := "https://api.weibo.com/2/users/show.json?access_token=" + weibo.AccessToken + "&uid=" + weibo.UID
 	res, err = http.Get(api)
 	if err != nil {
@@ -765,6 +676,7 @@ func (weibo *Weibo) Login(code string) bool {
 	return true
 }
 
+// Post a weibo status with picture
 func (weibo *Weibo) Upload(accessToken, weiboStatus, picURL string) {
 
 	api := "https://upload.api.weibo.com/2/statuses/upload.json"
@@ -809,4 +721,34 @@ func getDefaultOpts() map[string]string {
 		opts[key] = value
 	}
 	return opts
+}
+
+// Open database
+func openDB() (*sql.DB, error) {
+
+	// get directory of database
+	dataDir, err := os.Open(path)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	defer dataDir.Close()
+
+	// get database file
+	fi, _ := dataDir.Readdir(-1)
+	var dbfile string
+	for _, i := range fi {
+		if strings.Contains(i.Name(), ".sqlite") {
+			dbfile = path + i.Name()
+			break
+		}
+	}
+	if dbfile == "" {
+		// if dbfile not find, return an empty song
+		return nil, err
+	}
+
+	// open database
+	db, err := sql.Open("sqlite3", dbfile)
+	return db, err
 }

@@ -1,33 +1,34 @@
 import QtQuick 2.4
 import Ubuntu.Components 1.2
-
 import "../components"
 
 Page {
 
     property alias title: header.text
-    property alias selectedChannelID: channelList.selectedChannelID
-    property alias selectedChannelName: channelList.selectedChannelName
-    property var lastChannelID
 
     head {
         contents: DoubanHeader {
             id: header
-            text: ""
+            text: i18n.tr("Channels")
         }
     }
 
-
     ChannelList {
         id: channelList
-        onDelegateClicked: {
-            console.log("[频道选择] ", index, selectedChannelName)
-            if (!doubanPage.isLoginDouban() && selectedChannelID == "-3") {
-                doubanPage.addNotification(channelPage, i18n.tr("Please Login Douban Account First!"))
+        anchors.fill: parent
+        selectedIndex: player.currentMetaChannelIndex
+
+        onClicked: {
+            console.log("channel click", index)
+
+            if (index == 1 && !isLoginDouban()) {
+                notification("Please login Douban account!");
                 return;
             }
-            pageStack.pop()
-            doubanPage.song_next(selectedChannelID)
+
+            player.currentMetaChannelIndex = index;
+            player.currentMetaChannelID = DoubanChannels.channel(index).id;
+            pageStack.pop();
         }
     }
 }

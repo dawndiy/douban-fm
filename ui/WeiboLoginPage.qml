@@ -1,34 +1,47 @@
 import QtQuick 2.4
 import Ubuntu.Components 1.2
-import QtQuick.LocalStorage 2.0
-
 import "../components"
-import "../js/database.js" as Database
-import "../js/weibo.js" as WeiboAPI
 
 Page {
 
     property alias title: header.text
     property alias url: webView.url
-    // 主页头部
+
+    Component.onCompleted: {
+        webView.url = "https://api.weibo.com/oauth2/authorize?client_id=" + Weibo.key + "&response_type=code&redirect_uri=https://api.weibo.com/oauth2/default.html&display=mobile"
+    }
+
+    /**
+     * Login weibo in backend
+     */
+    function loginWeibo(code) {
+        var ok = Weibo.login(code);
+        if (ok) {
+            console.debug("Login weibo success");
+            storage.saveWeiboUser(Weibo.uid, Weibo.screenName, Weibo.accessToken);
+
+        } else {
+            // TODO: need to do something ?
+        }
+    }
+
     head {
         contents: DoubanHeader {
             id: header
-            text: ""
-            source: "../images/weibo_64x64.png"
+            text: i18n.tr("Login Sina Weibo")
+            source: Qt.resolvedUrl("../images/weibo_64x64.png")
         }
     }
 
     WeiboWebView {
         id: webView
         onLoadingChanged: {
-            console.log("___________________________")
-            console.log(url)
+            console.debug("[Signal: LoadingChanged]" + url)
             var str = String(url);
             if (str.indexOf("https://api.weibo.com/oauth2/default.html?code=") > -1) {
                 var code = str.split("code=")[1]
                 url = "";
-                login_weibo(code);
+                loginWeibo(code);
                 pageStack.pop();
             } else if (str.indexOf("error_code") > -1) {
                 url = "";
@@ -36,26 +49,4 @@ Page {
             }
         }
     }
-
-    Component.onCompleted: {
-        console.log(" WEIBO ")
-    }
-
-    // =============================================================
-    // Javascript
-    // =============================================================
-
-    function login_weibo(code) {
-        var ok = weibo.login(code);
-        if (ok) {
-            console.log("login success");
-            Database.saveWeiboAuth(weibo.uid, weibo.screenName, weibo.accessToken);
-            settingsPage.loginWeiboLabel.text = weibo.screenName;
-
-        } else {
-            // TODO: 
-        }
-    }
-
-    // =============================================================
 }

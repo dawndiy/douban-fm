@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.4
 import Ubuntu.Components 1.1
 
 Item {
@@ -7,14 +7,10 @@ Item {
     property alias source: image.source
 
     height: units.gu(7)
-    //anchors {
-    //    left: parent.left
-    //}
 
     Image {
         id: image
         source: Qt.resolvedUrl("../images/logo.png");
-        //sourceSize.width: units.gu(4)
         anchors {
             left: parent.left
             verticalCenter: parent.verticalCenter

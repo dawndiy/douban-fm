@@ -53,10 +53,3 @@ function statuses_upload(access_token, weibo_status, pic_url, func) {
   weibo.upload(access_token, weibo_status, pic_url);
   func();
 }
-
-
-
-function Test() {
-  console.log("=================================");
-  console.log("=================================");
-}

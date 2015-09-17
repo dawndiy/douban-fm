@@ -15,10 +15,13 @@ Dialog {
 
         spacing: units.gu(2)
 
-        // TODO
+        // login result
         Label {
-            text: "123"
+            id: loginAlert
+            text: ""
+            anchors.horizontalCenter: parent.horizontalCenter
             visible: false
+            color: "red"
         }
 
         TextField {
@@ -39,10 +42,12 @@ Dialog {
             Button {
                 text: i18n.tr("login")
                 width: parent.width / 2
-                color: UbuntuColors.orange
+                color: UbuntuColors.green
                 onClicked: {
-                    console.log("login");
-                    var result = doubanUser.login(email.text, password.text);
+                    console.debug("login douban");
+                    loginAlert.visible = false;
+                    loginAlert.text = "";
+                    var result = DoubanUser.login(email.text, password.text);
                     if (result.result == 0) {
                         var user = {
                             user_id: result.id,
@@ -55,7 +60,10 @@ Dialog {
                         loginDoubanLabel.text = user.user_name;
                         PopupUtils.close(dialog)
                     } else {
-                        console.log(result.err, result.result)
+                        // Email or Password error
+                        console.debug(result.err, result.result)
+                        loginAlert.text = i18n.tr("Wrong email or password! Please try again.")
+                        loginAlert.visible = true
                     }
                 }
             }

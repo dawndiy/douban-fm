@@ -5,6 +5,7 @@ import Ubuntu.Components.Popups 1.0
 
 Dialog {
     id: dialog
+
     title: i18n.tr("About Douban FM")
 
     Item {
@@ -33,8 +34,8 @@ Dialog {
                     appIcon.clickTime = now.getTime();
                     if (appIcon.clickCount >= 2) {
                         console.log("Easter Eggs")
-                        pageStack.push(eggsPage)
-                        doubanPage.addNotification(eggsPage, i18n.tr("★★★ Wow! You find this Easter egg!★★★ "), 8)
+                        pageStack.push(Qt.resolvedUrl("../ui/EggsPage.qml"))
+                        notification(i18n.tr("★★★ Wow! You find this Easter egg!★★★ "), 8)
                         PopupUtils.close(dialog)
                         appIcon.clickCount = 0;
                     }
@@ -59,6 +60,7 @@ Dialog {
     ListItem.ThinDivider{}
 
     Label {
+        // TODO: move to program
         text: i18n.tr("Version: 0.1.2")
         anchors {
             left: parent.left

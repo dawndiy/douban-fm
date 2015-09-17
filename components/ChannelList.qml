@@ -1,25 +1,37 @@
-import QtQuick 2.0
+import QtQuick 2.4
 import Ubuntu.Components 1.2
 import Ubuntu.Components.ListItems 1.0 as ListItems
 
+Item {
+    objectName: "channelList"
 
-ListItems.ItemSelector {
+    property int selectedIndex: channelLoader.item.selectedIndex
 
-    property var selectedChannelID: 0
-    property var selectedChannelName: "私人兆赫"
+    signal clicked(int index)
 
-    id: channelList
-    text: i18n.tr("Channels")
-    anchors.fill: parent
-    expanded: true
-    model: channels.len
-    delegate: Component {
-        OptionSelectorDelegate {
-            text: channels.channel(index).name
+    Loader {
+        id: channelLoader
+        anchors.fill: parent
+        asynchronous: true
+
+        sourceComponent: Component {
+
+            ListItems.ItemSelector {
+                text: i18n.tr("Channels")
+                expanded: true
+                model: DoubanChannels.len
+
+                delegate: Component {
+                    OptionSelectorDelegate {
+                        text: DoubanChannels.channel(index).name
+                    }
+                }
+
+                onDelegateClicked: channelList.clicked(index)
+            }
         }
-    }
-    onDelegateClicked: {
-        selectedChannelID = channels.channel(index).id
-        selectedChannelName = channels.channel(index).name
+        onLoaded: {
+            item.selectedIndex = channelList.selectedIndex
+        }
     }
 }
