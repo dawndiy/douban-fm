@@ -18,15 +18,22 @@ import (
 	"time"
 )
 
-/* Go-qml 没有 offlineStoragePath 方法 */
+const ApplicationName = "douban-fm.ubuntu-dawndiy"
 
-// var path string = "/home/phablet/.local/share/douban-fm.ubuntu-dawndiy/Databases/"
-
-var path string = "/home/dawndiy/.local/share/douban-fm.ubuntu-dawndiy/Databases/"
+var XDG_DATA_HOME string = os.Getenv("XDG_DATA_HOME")
+var DB_PATH string
 
 func main() {
+
+	// check env
+	if XDG_DATA_HOME == "" {
+		HOME := os.Getenv("HOME")
+		XDG_DATA_HOME = HOME + "/.local/share"
+	}
+	DB_PATH = XDG_DATA_HOME + "/" + ApplicationName + "/Databases/"
+
 	log.Println("==Start==")
-	log.Println("Database Path: ", path)
+	log.Println("Database Path: ", DB_PATH)
 	err := qml.Run(run)
 	log.Println(err)
 }
@@ -252,17 +259,17 @@ func (m *Music) NextOfflineMusic() doubanfm.Song {
 	// save picData and musicData to local path
 	surl := strings.Split(s.URL, ".")
 	ftype := surl[len(surl)-1]
-	f, _ := os.Create(path + "music." + ftype)
+	f, _ := os.Create(DB_PATH + "music." + ftype)
 	f.Write(musicData)
 	f.Close()
-	s.URL = path + "music." + ftype
+	s.URL = DB_PATH + "music." + ftype
 
 	purl := strings.Split(s.Picture, ".")
 	ftype = purl[len(purl)-1]
-	f, _ = os.Create(path + "pic." + ftype)
+	f, _ = os.Create(DB_PATH + "pic." + ftype)
 	f.Write(picData)
 	f.Close()
-	s.Picture = path + "pic." + ftype
+	s.Picture = DB_PATH + "pic." + ftype
 
 	log.Println("[INFO]:", s.Title)
 
@@ -310,6 +317,7 @@ func (m *Music) SyncMusic(channelID, userID, expire, token string, count int) {
 		log.Println("-- 开始离线歌曲 --")
 
 		sameSongsRetry := 3
+		fm := doubanfm.NewDoubanFM()
 
 		for i := 0; i < count; i++ {
 
@@ -325,8 +333,18 @@ func (m *Music) SyncMusic(channelID, userID, expire, token string, count int) {
 			}
 
 			// get songs from star channel
-			s := m.NextWithUser("-3", userID, expire, token)
-			log.Println("[Loading]:", s.Artist, s.Title)
+			opts := getDefaultOpts()
+			opts["channel"] = channelID
+			opts["user_id"] = m.userID
+			opts["expire"] = m.expire
+			opts["token"] = m.token
+			songs, err := fm.Songs(opts)
+			if err != nil || len(songs) == 0 {
+				i--
+				continue
+			}
+			s := songs[0]
+			log.Println("[SYNC Loading]:", s.Artist, s.Title)
 
 			// check if this song already in database
 			stmt, _ := db.Prepare("select sid from music where sid=?")
@@ -349,7 +367,7 @@ func (m *Music) SyncMusic(channelID, userID, expire, token string, count int) {
 			stmt.Close()
 
 			// get album picture
-			log.Println("[WORKER]: loading album picture")
+			log.Println("[SYNC WORKER]: loading album picture")
 			res, err := http.Get(s.Picture)
 			if err != nil {
 				log.Println("[ERROR]:", err)
@@ -357,10 +375,10 @@ func (m *Music) SyncMusic(channelID, userID, expire, token string, count int) {
 			}
 			picData, _ := ioutil.ReadAll(res.Body)
 			res.Body.Close()
-			log.Println("[WORKER]: album picture OK")
+			log.Println("[SYNC WORKER]: album picture OK")
 
 			// get music
-			log.Println("[WORKER]: loading music")
+			log.Println("[SYNC WORKER]: loading music")
 			res, err = http.Get(s.URL)
 			if err != nil {
 				log.Println("[ERROR]: network error ", err)
@@ -368,7 +386,7 @@ func (m *Music) SyncMusic(channelID, userID, expire, token string, count int) {
 			}
 			musicData, _ := ioutil.ReadAll(res.Body)
 			res.Body.Close()
-			log.Println("[WORKER]: music OK")
+			log.Println("[SYNC WORKER]: music OK")
 
 			// 存储离线音乐
 			stmt, _ = db.Prepare("insert into music values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
@@ -727,7 +745,7 @@ func getDefaultOpts() map[string]string {
 func openDB() (*sql.DB, error) {
 
 	// get directory of database
-	dataDir, err := os.Open(path)
+	dataDir, err := os.Open(DB_PATH)
 	if err != nil {
 		log.Println(err)
 		return nil, err
@@ -739,7 +757,7 @@ func openDB() (*sql.DB, error) {
 	var dbfile string
 	for _, i := range fi {
 		if strings.Contains(i.Name(), ".sqlite") {
-			dbfile = path + i.Name()
+			dbfile = DB_PATH + i.Name()
 			break
 		}
 	}

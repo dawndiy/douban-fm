@@ -43,7 +43,7 @@ Page {
                     width: parent.width / 2
                     color: UbuntuColors.orange
                     onClicked: {
-                        song.clearSync();
+                        DoubanMusic.clearSync();
                         sync_count.text = 0;
                         PopupUtils.close(dialog)
                     }
