@@ -1,7 +1,8 @@
 import QtQuick 2.4
+import QtSensors 5.0
+import UserMetrics 0.1
 import Ubuntu.Components 1.2
 import Ubuntu.Connectivity 1.0
-import UserMetrics 0.1
 import "data"
 import "components"
 import "ui"
@@ -44,7 +45,6 @@ MainView {
      * Networking status
      */
     function networkingStatus() {
-        return false;
         return NetworkingStatus.online;
     }
 
@@ -135,6 +135,28 @@ MainView {
 
     Player {
         id: player
+    }
+
+    // SensorGesture
+    SensorGesture {
+        gestures: [
+            "QtSensors.shake"
+            // "QtSensors.whip",
+            // "QtSensors.twist",
+            // "QtSensors.cover",
+            // "QtSensors.hover",
+            // "QtSensors.turnover",
+            // "QtSensors.pickup",
+            // "QtSensors.slam",
+            // "QtSensors.doubletap"
+        ]
+        enabled: true
+        onDetected: {
+            console.debug("[GESTURE]:", gesture)
+            if (storage.getConfig("shake") == "true") {
+                player.nextMusic();
+            }
+        }
     }
 
     PageStack {

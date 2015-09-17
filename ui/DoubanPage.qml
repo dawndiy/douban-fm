@@ -1,13 +1,9 @@
 import QtQuick 2.4
-import QtSensors 5.0
 import QtMultimedia 5.0
 import QtGraphicalEffects 1.0
-import QtQuick.LocalStorage 2.0
 import Ubuntu.Components 1.2
 import Ubuntu.Connectivity 1.0
-
 import "../components"
-import "../js/database.js" as Database
 
 
 Page {
@@ -284,28 +280,6 @@ Page {
                         player.nextMusic();
                     }
                 }
-            }
-        }
-    }
-
-    // 传感器手势
-    SensorGesture {
-        gestures: [
-            "QtSensors.shake"
-            // "QtSensors.whip",
-            // "QtSensors.twist",
-            // "QtSensors.cover",
-            // "QtSensors.hover",
-            // "QtSensors.turnover",
-            // "QtSensors.pickup",
-            // "QtSensors.slam",
-            // "QtSensors.doubletap"
-        ]
-        enabled: true
-        onDetected: {
-            console.log(gesture)
-            if (settingsPage.settingShakeSwitch.checked) {
-                song_next();
             }
         }
     }
