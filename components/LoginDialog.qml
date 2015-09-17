@@ -3,9 +3,6 @@ import Ubuntu.Components 1.2
 import Ubuntu.Components.Popups 1.0
 import QtQuick.LocalStorage 2.0
 
-import "../js/database.js" as Database
-
-
 Dialog {
     id: dialog
     title: i18n.tr("Log in")
@@ -56,7 +53,7 @@ Dialog {
                             user_name: result.name,
                             email: result.email
                         }
-                        Database.saveUser(user);
+                        storage.saveDoubanUser(user);
                         loginDoubanLabel.text = user.user_name;
                         PopupUtils.close(dialog)
                     } else {
