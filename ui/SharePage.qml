@@ -5,7 +5,6 @@ import "../components"
 Page {
 
     property alias title: header.text
-    property alias imageUrl: image.source
 
     /**
      * Post weibo to Share current music
@@ -61,15 +60,16 @@ Page {
         ]
     }
 
-    // Flickable {
-    //     id: flickable
+    Flickable {
+        id: flickable
 
-    //     anchors.fill: parent
-    //     contentHeight: content.height
-    //     contentWidth: parent.width
+        anchors.fill: parent
+        contentHeight: column.height
+        contentWidth: parent.width
 
         Column {
-            id: content
+            id: column
+            spacing: units.gu(2)
 
             anchors {
                 top: parent.top
@@ -78,7 +78,6 @@ Page {
                 leftMargin: units.gu(2)
                 right: parent.right
                 rightMargin: units.gu(2)
-                bottom: parent.bottom
             }
 
             Label {
@@ -90,10 +89,6 @@ Page {
             TextArea {
                 id: textArea
                 width: parent.width
-                anchors {
-                    top: shareLabel.bottom
-                    topMargin: units.gu(1)
-                }
                 text: player.currentMusic ? weiboContent(player.currentMusic) : ""
             }
 
@@ -102,16 +97,12 @@ Page {
                 source: player.currentMusic ? player.currentMetaArt : ""
                 fillMode: Image.PreserveAspectFit
                 anchors {
-                    top: textArea.bottom
-                    topMargin: units.gu(2)
                     left: parent.left
                     leftMargin: units.gu(5)
                     right: parent.right
                     rightMargin: units.gu(5)
-                    bottom: parent.bottom
-                    bottomMargin: units.gu(5)
                 }
             }
         }
-    // }
+    }
 }

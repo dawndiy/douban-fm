@@ -131,6 +131,7 @@ Page {
         id: image
         source: player.currentMetaArt != "" ? Qt.resolvedUrl(player.currentMetaArt) : Qt.resolvedUrl("../images/logo.png")
         loading: player.status == MediaPlayer.Buffered || player.status == MediaPlayer.Loaded ? false : true;
+        pause: player.isPlaying ? false : true;
         anchors {
             top: parent.top
             topMargin: units.gu(6)

@@ -19,7 +19,7 @@ Page {
         selectedIndex: player.currentMetaChannelIndex
 
         onClicked: {
-            console.log("channel click", index)
+            console.debug("[Action: Channel]", index)
 
             if (index == 1 && !isLoginDouban()) {
                 notification("Please login Douban account!");
