@@ -33,6 +33,12 @@ Item {
             var user = storage.getDoubanUser();
             music = DoubanMusic.nextWithUser(channel_id, user.user_id, user.expire, user.token);
         } else {
+            if (channel_id == "-3") {
+                notification("Please login Douban account!");
+                currentMetaChannelID = "0";
+                currentMetaChannelIndex = 0;
+                channel_id = 0;
+            }
             // get music normally
             music = DoubanMusic.next(channel_id);
         }
