@@ -96,11 +96,10 @@ Page {
                 id: image
                 source: player.currentMusic ? player.currentMetaArt : ""
                 fillMode: Image.PreserveAspectFit
+                height: parent.width
                 anchors {
                     left: parent.left
-                    leftMargin: units.gu(5)
                     right: parent.right
-                    rightMargin: units.gu(5)
                 }
             }
         }
