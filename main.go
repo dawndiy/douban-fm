@@ -19,6 +19,7 @@ import (
 )
 
 const ApplicationName = "douban-fm.ubuntu-dawndiy"
+const ApplicationVersion = "0.1.2"
 
 var XDG_DATA_HOME string = os.Getenv("XDG_DATA_HOME")
 var DB_PATH string
@@ -51,6 +52,7 @@ func run() error {
 	context.SetVar("DoubanChannels", GetChannels())
 	context.SetVar("DoubanUser", &DoubanUser{})
 	context.SetVar("Weibo", getWeibo())
+	context.SetVar("ApplicationVersion", ApplicationVersion)
 
 	component, err := engine.LoadFile("douban-fm.qml")
 	if err != nil {

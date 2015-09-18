@@ -60,8 +60,7 @@ Dialog {
     ListItem.ThinDivider{}
 
     Label {
-        // TODO: move to program
-        text: i18n.tr("Version: 0.1.2")
+        text: i18n.tr("Version: ") + ApplicationVersion
         anchors {
             left: parent.left
             right: parent.right
