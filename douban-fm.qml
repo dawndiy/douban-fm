@@ -97,6 +97,9 @@ MainView {
         var is_online = networkingStatus();
         if (!is_online) {
             notification(i18n.tr("No Network!"))
+            if (DoubanMusic.syncCount() > 0) {
+                notification(i18n.tr("Play offline music now..."), 3)
+            }
         }
 
         // Check whether the user authorization expired
@@ -164,9 +167,5 @@ MainView {
         Component.onCompleted: {
             push(Qt.resolvedUrl("ui/DoubanPage.qml"))
         }
-
-        // onCurrentPageChanged: {
-        //     console.debug("---", "pagestack")
-        // }
     }
 }
