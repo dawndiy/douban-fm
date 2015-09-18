@@ -9,8 +9,28 @@ Item {
      */
     function openDB() {
         if (db != null) return;
-        db = LocalStorage.openDatabaseSync("douban-fm", "1.0", "StorageDatabase", 10000000)
+        db = LocalStorage.openDatabaseSync("douban-fm", "", "StorageDatabase", 10000000)
         // NOTE: deal version if do some update
+        console.debug("[DATABASE]:", db.version)
+
+        if (db.version === "") {
+            db.changeVersion("", "1.0", function(tx) {
+                console.log('Database created');
+            });
+            // reopen database with new version number
+            db = LocalStorage.openDatabaseSync("douban-fm", "", "StorageDatabase", 100000);
+        }
+
+        // from this version, change db version to app version
+        if (db.version === "1.0") {
+            db.changeVersion("1.0", "0.2.0", function(tx) {
+                tx.executeSql("drop table if exists weibo");
+                tx.executeSql("create table if not exists weibo(uid text, screen_name text, access_token text, expire integer, updated integer)")
+                console.log("[DATABASE]: Database upgraded to v0.2.0");
+            });
+            // reopen database with new version number
+            db = LocalStorage.openDatabaseSync("douban-fm", "", "StorageDatabase", 100000);
+        }
     }
 
     /**
@@ -56,12 +76,12 @@ Item {
     /**
      * Save Weibo user
      */
-    function saveWeiboUser(uid, screen_name, access_token) {
+    function saveWeiboUser(uid, screen_name, access_token, expire, updated) {
         openDB()
         db.transaction(function(tx) {
-            tx.executeSql("create table if not exists weibo(uid text, screen_name, access_token text)");
+            tx.executeSql("create table if not exists weibo(uid text, screen_name text, access_token text, expire integer, updated integer)")
             tx.executeSql("delete from weibo");
-            tx.executeSql("insert into weibo values(?, ?, ?)", [uid, screen_name, access_token])
+            tx.executeSql("insert into weibo values(?, ?, ?, ?, ?)", [uid, screen_name, access_token, expire, updated])
         });
     }
 
@@ -72,8 +92,8 @@ Item {
         openDB();
         var user;
         db.transaction(function(tx) {
-            tx.executeSql("create table if not exists weibo(uid text, screen_name, access_token text)");
-            var rs = tx.executeSql("select uid, screen_name, access_token from weibo");
+            tx.executeSql("create table if not exists weibo(uid text, screen_name text, access_token text, expire integer, updated integer)")
+            var rs = tx.executeSql("select uid, screen_name, access_token, expire, updated from weibo");
             if (rs.rows.length != 0) {
                 user = rs.rows.item(0);
             }
@@ -87,7 +107,7 @@ Item {
     function clearWeiboUser() {
         openDB();
         db.transaction(function(tx) {
-            tx.executeSql("create table if not exists weibo(uid text, screen_name, access_token text)");
+            tx.executeSql("create table if not exists weibo(uid text, screen_name text, access_token text, expire integer, updated integer)")
             tx.executeSql("delete from weibo");
         });
     }

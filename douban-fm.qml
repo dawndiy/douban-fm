@@ -117,7 +117,15 @@ MainView {
             }
         }
         if (isLoginWeibo()) {
-            // TODO: weibo
+            var user = storage.getWeiboUser();
+            var expire = Number(user.expire);
+            var updated = Number(user.updated);
+            var now = +new Date();
+            if (now > expire+updated) {
+                notification(i18n.tr("Weibo authorization expired, please login again."), 10)
+                storage.clearWeiboUser();
+                return;
+            }
         }
 
         player.nextMusic();

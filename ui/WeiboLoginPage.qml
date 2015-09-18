@@ -21,11 +21,13 @@ Page {
     function loginWeibo(code) {
         var ok = Weibo.login(code);
         if (ok) {
-            console.debug("Login weibo success");
-            storage.saveWeiboUser(Weibo.uid, Weibo.screenName, Weibo.accessToken);
+            var now = +new Date();
+            console.debug("Login weibo success at " + now);
+            storage.saveWeiboUser(Weibo.uid, Weibo.screenName, Weibo.accessToken, Weibo.expiresIn, now);
 
         } else {
-            // TODO: need to do something ?
+            console.debug("Login weibo failed");
+            notification(i18n.tr("Login weibo failed, please try again!"))
         }
     }
 
