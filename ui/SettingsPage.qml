@@ -206,6 +206,7 @@ Page {
                         if (!isLoginDouban()) {
                             notification(i18n.tr("Please login douban account first!"))
                             checked = false
+                            storage.setConfig("sync", String(checked))
                             return;
                         }
                         if (checked && networkingStatus()) {
