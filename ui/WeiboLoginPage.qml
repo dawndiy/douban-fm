@@ -8,6 +8,9 @@ Page {
     property alias title: header.text
     property alias url: webView.url
 
+    signal loginSuccess()
+    signal loginFailed()
+
     Component.onCompleted: {
         webView.url = "https://api.weibo.com/oauth2/authorize?client_id=" + Weibo.key + "&response_type=code&redirect_uri=https://api.weibo.com/oauth2/default.html&display=mobile"
     }
@@ -44,9 +47,11 @@ Page {
                 var code = str.split("code=")[1]
                 url = "";
                 loginWeibo(code);
+                loginSuccess();
                 pageStack.pop();
             } else if (str.indexOf("error_code") > -1) {
                 url = "";
+                loginFailed();
                 pageStack.pop();
             }
         }

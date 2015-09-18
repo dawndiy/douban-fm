@@ -29,6 +29,18 @@ Page {
     }
 
     Component {
+        id: weiboLoginPage
+        WeiboLoginPage {
+            onLoginSuccess: {
+                loginWeiboLabel.text = storage.getWeiboUser().screen_name;
+            }
+            onLoginFailed: {
+                notification(i18n.tr("Login weibo failed!"))
+            }
+        }
+    }
+
+    Component {
         id: clearOfflineDialog
         Dialog {
             id: dialog
@@ -162,7 +174,7 @@ Page {
                             notification(i18n.tr("No network!"));
                             return;
                         }
-                        pageStack.push(Qt.resolvedUrl("WeiboLoginPage.qml"));
+                        pageStack.push(weiboLoginPage);
                     } else {
                         PopupUtils.open(logoutWeiboDialog);
                     }
