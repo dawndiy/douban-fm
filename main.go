@@ -19,7 +19,7 @@ import (
 )
 
 const ApplicationName = "douban-fm.ubuntu-dawndiy"
-const ApplicationVersion = "0.1.2"
+const ApplicationVersion = "0.2.0"
 
 var XDG_DATA_HOME string = os.Getenv("XDG_DATA_HOME")
 var DB_PATH string
