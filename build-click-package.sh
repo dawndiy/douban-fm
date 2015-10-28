@@ -47,6 +47,7 @@ SERIES=$3
 
 #CURRENT_DIR=`pwd`
 CURRENT_DIR="/home/dawndiy/workspace/golang/"
+GOROOT="/usr/local/lib/go/"
 
 echo -n "Removing $APP_NAME directory... "
 executeCommand "rm -rf ./$APP_NAME"
@@ -70,7 +71,7 @@ executeCommand "cp channels.json $APP_NAME/"
 echo "Done"
 
 echo -n "Cross compiling $APP_NAME..."
-executeCommand "click chroot -a armhf -f $CHROOT -s $SERIES run CGO_ENABLED=1 GOARCH=arm GOARM=7 PKG_CONFIG_LIBDIR=/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig GOPATH=$CURRENT_DIR CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ go build -ldflags '-extld=arm-linux-gnueabihf-g++' -o $APP_NAME/$APP_NAME"
+executeCommand "click chroot -a armhf -f $CHROOT -s $SERIES run CGO_ENABLED=1 GOARCH=arm GOARM=7 PKG_CONFIG_LIBDIR=/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig GOROOT=$GOROOT GOPATH=$CURRENT_DIR CC=arm-linux-gnueabihf-gcc CXX=arm-linux-gnueabihf-g++ go build -ldflags '-extld=arm-linux-gnueabihf-g++' -o $APP_NAME/$APP_NAME"
 echo "Done"
 
 echo -n "Building click package ... "
