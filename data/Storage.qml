@@ -33,10 +33,12 @@ Item {
         }
 
         if (db.version === "0.2.0") {
-            db.changeVersion("0.2.0", "0.2.2", function(tx) {
+            db.changeVersion("0.2.0", "0.2.1", function(tx) {
                 tx.executeSql("drop table if exists user");
                 tx.executeSql("create table if not exists user(id text, uid text, name text, expires text, dbcl2 text)");
-                console.log("[DATABASE]: Database upgraded to v0.2.2");
+                tx.executeSql("drop table if exists music");
+                tx.executeSql("create table if not exists music(picture text, albumTitle text, like integer, album text, ssid text, title text, url text, artist text, subType text, length integer, sid text, aid text, company text, publicTime text, sha256 text, kbps text)");
+                console.log("[DATABASE]: Database upgraded to v0.2.1");
             });
             // reopen database with new version number
             db = LocalStorage.openDatabaseSync("douban-fm", "", "StorageDatabase", 100000);
@@ -49,7 +51,7 @@ Item {
     function saveDoubanUser(user) {
         openDB();
         db.transaction(function(tx) {
-            //tx.executeSql("create table if not exists user(user_id text, token text, expire text, user_name text, email text)");
+            tx.executeSql("create table if not exists user(id text, uid text, name text, expires text, dbcl2 text)");
             tx.executeSql("delete from user");
             tx.executeSql(
                 "insert into user values(?, ?, ?, ?, ?)", 
@@ -64,8 +66,7 @@ Item {
         openDB();
         var user;
         db.transaction(function(tx) {
-            //tx.executeSql("create table if not exists user(user_id text, token text, expire text, user_name text, email text)");
-            //var rs = tx.executeSql("select user_id, token, expire, user_name, email from user");
+            tx.executeSql("create table if not exists user(id text, uid text, name text, expires text, dbcl2 text)");
             var rs = tx.executeSql("select uid, id, name, expires, dbcl2 from user");
             if (rs.rows.length != 0) {
                 user = rs.rows.item(0);
@@ -79,7 +80,7 @@ Item {
     function clearDoubanUser() {
         openDB();
         db.transaction(function(tx) {
-            //tx.executeSql("create table if not exists user(user_id text, token text, expire text, user_name text, email text)");
+            tx.executeSql("create table if not exists user(id text, uid text, name text, expires text, dbcl2 text)");
             tx.executeSql("delete from user");
         });
     }
@@ -153,5 +154,25 @@ Item {
             tx.executeSql("delete from config where name=?", [name])
             tx.executeSql("insert into config values(?,?)", [name, value])
         });
+    }
+
+    /**
+     * Get saved music
+     */
+    function getMusic() {
+        openDB();
+        var music;
+        db.transaction(function(tx) {
+            tx.executeSql("create table if not exists music(picture text, albumTitle text, like integer, album text, ssid text, title text, url text, artist text, subType text, length integer, sid text, aid text, company text, publicTime text, sha256 text, kbps text)");
+            var rs = tx.executeSql("select picture, albumTitle, like, album, ssid, title, url, artist, subType, length, sid, aid, company, publicTime, sha256, kbps from music order by RANDOM()");
+            if (rs.rows.length != 0) {
+                music = rs.rows.item(0);
+            }
+        });
+        if (music) {
+            return music;
+        } else {
+            return null;
+        }
     }
 }

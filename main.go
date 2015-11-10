@@ -12,6 +12,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/bitly/go-simplejson"
 	"github.com/dawndiy/douban-sdk"
@@ -21,12 +22,14 @@ import (
 
 const (
 	ApplicationName    = "douban-fm.ubuntu-dawndiy"
-	ApplicationVersion = "0.2.0"
+	ApplicationVersion = "0.2.1"
 )
 
 var (
 	XDG_DATA_HOME string = os.Getenv("XDG_DATA_HOME")
 	DB_PATH       string
+	MUSIC_PATH    string
+	PICTURE_PATH  string
 )
 
 func init() {
@@ -36,6 +39,14 @@ func init() {
 		XDG_DATA_HOME = HOME + "/.local/share"
 	}
 	DB_PATH = XDG_DATA_HOME + "/" + ApplicationName + "/Databases/"
+	MUSIC_PATH = XDG_DATA_HOME + "/" + ApplicationName + "/Musics/"
+	PICTURE_PATH = XDG_DATA_HOME + "/" + ApplicationName + "/Pictures/"
+	if _, err := os.Stat(MUSIC_PATH); os.IsNotExist(err) {
+		os.Mkdir(MUSIC_PATH, os.ModePerm)
+	}
+	if _, err := os.Stat(PICTURE_PATH); os.IsNotExist(err) {
+		os.Mkdir(PICTURE_PATH, os.ModePerm)
+	}
 }
 
 func main() {
@@ -79,14 +90,6 @@ type Music struct {
 	CurrentChannenID string
 }
 
-func (m *Music) debug() {
-	print("\n--------\n")
-	for _, v := range m.List {
-		print(v.SID + "-" + v.Title + " , ")
-	}
-	print("\n--------\n")
-}
-
 // NewList get new play list
 func (m *Music) NewList() error {
 	songs, err := doubanfm.PlayListNew(m.CurrentChannenID)
@@ -94,7 +97,6 @@ func (m *Music) NewList() error {
 		return errors.New("can't get more songs")
 	}
 	m.List = append(m.List, songs...)
-	m.debug()
 	return nil
 }
 
@@ -110,7 +112,6 @@ func (m *Music) SkipMusic(sid, position string) doubanfm.Song {
 		return doubanfm.Song{}
 	}
 	m.List = append(m.List, songs...)
-	m.debug()
 	next := m.List[0]
 	m.List = m.List[1:]
 	// get more songs to play list
@@ -126,7 +127,6 @@ func (m *Music) More(sid string) error {
 			continue
 		}
 		m.List = append(m.List, songs...)
-		m.debug()
 		return nil
 	}
 	return errors.New("can't get more songs")
@@ -159,10 +159,11 @@ func (m *Music) Next() doubanfm.Song {
 // ChangeChannel
 func (m *Music) ChangeChannel(channelID string) doubanfm.Song {
 	m.Clear()
-	doubanfm.ChannelChange(m.CurrentChannenID, channelID, "recent_chls")
+	err := doubanfm.ChannelChange(m.CurrentChannenID, channelID, "recent_chls")
+	checkLogout(err)
 	m.CurrentChannenID = channelID
 
-	err := m.NewList()
+	err = m.NewList()
 	if err != nil {
 		log.Println("[ERROR]: network error ", err)
 		return doubanfm.Song{}
@@ -182,7 +183,6 @@ func (m *Music) BanMusic(sid, position, channelID string) doubanfm.Song {
 		return doubanfm.Song{}
 	}
 	m.List = append(m.List, songs...)
-	m.debug()
 	next := m.List[0]
 	m.List = m.List[1:]
 	m.More(next.SID)
@@ -197,7 +197,6 @@ func (m *Music) RateMusic(sid, position, channelID string) {
 		return
 	}
 	m.List = append(m.List, songs...)
-	m.debug()
 }
 
 // Unrate this music
@@ -208,7 +207,6 @@ func (m *Music) UnrateMusic(sid, position, channelID string) {
 		return
 	}
 	m.List = append(m.List, songs...)
-	m.debug()
 }
 
 // SetDBCL2 set user auth
@@ -219,306 +217,131 @@ func (m *Music) SetDBCL2(dbcl2 string) {
 	doubanfm.SetUser(user)
 }
 
-func (m *Music) SyncMusic(channelID string) {
+// SyncMusic from douban fm
+func (m *Music) SyncMusic(channelID string, count int) {
+	checkTableMusic()
+	go func(count int) {
+		db, err := openDB()
+		if err != nil {
+			log.Println("[ERROR]: db", err)
+			return
+		}
+		defer db.Close()
+
+		musicCount := 0
+		sameSongsRetry := 3
+		for {
+			songs, err := doubanfm.PlayListNew(channelID)
+			if err != nil || len(songs) == 0 {
+				time.Sleep(time.Second)
+				continue
+			}
+			for _, s := range songs {
+				stmt, _ := db.Prepare("select sid from music where sid=?")
+				rows, _ := stmt.Query(s.SID)
+				if !rows.Next() {
+					rows.Close()
+					stmt.Close()
+
+					log.Println("[SYNC WORKER]:", s.SID, s.Artist, s.Title)
+					log.Println("[SYNC WORKER]: loading album picture")
+					res, err := http.Get(s.Picture)
+					if err != nil {
+						log.Println("[ERROR]:", err)
+						continue
+					}
+					picData, _ := ioutil.ReadAll(res.Body)
+					res.Body.Close()
+					log.Println("[SYNC WORKER]: album picture OK")
+
+					log.Println("[SYNC WORKER]: loading music")
+					res, err = http.Get(s.URL)
+					if err != nil {
+						log.Println("[ERROR]:", err)
+						continue
+					}
+					musicData, _ := ioutil.ReadAll(res.Body)
+					res.Body.Close()
+					log.Println("[SYNC WORKER]: music OK")
+
+					// get music and pic file name
+					_surl := strings.Split(s.URL, "/")
+					_sFName := _surl[len(_surl)-1]
+					musicFilePath := MUSIC_PATH + strings.Split(_sFName, ".")[0]
+					_purl := strings.Split(s.Picture, "/")
+					_pFName := _purl[len(_purl)-1]
+					picFilePath := PICTURE_PATH + strings.Split(_pFName, ".")[0]
+
+					// save music file
+					f, _ := os.Create(musicFilePath)
+					f.Write(musicData)
+					f.Close()
+
+					// save picture file
+					f, _ = os.Create(picFilePath)
+					f.Write(picData)
+					f.Close()
+
+					// save info in database
+					s.Picture = picFilePath
+					s.URL = musicFilePath
+
+					stmt, _ = db.Prepare("insert into music values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
+					r, err := stmt.Exec(
+						s.Picture,
+						s.AlbumTitle,
+						s.Like,
+						s.Album,
+						s.SSID,
+						s.Title,
+						s.URL,
+						s.Artist,
+						s.SubType,
+						s.Length,
+						s.SID,
+						s.AID,
+						s.Company,
+						s.PublicTime,
+						s.SHA256,
+						s.Kbps,
+					)
+					stmt.Close()
+					log.Println("[Save]:", r, err)
+
+					musicCount++
+					time.Sleep(time.Second)
+				} else {
+					rows.Close()
+					stmt.Close()
+					sameSongsRetry--
+				}
+			}
+			if musicCount >= count || sameSongsRetry < 0 {
+				break
+			}
+		}
+	}(count)
 }
 
-// NextOffLineMusic get offline music
-// func (m *Music) NextOfflineMusic() doubanfm.Song {
-//
-// 	// open database
-// 	db, err := openDB()
-// 	if err != nil {
-// 		log.Println("[ERROR]: db", err)
-// 		return doubanfm.Song{}
-// 	}
-// 	defer db.Close()
-//
-// 	// create table for music
-// 	execSQL := `create table if not exists
-// 			music(
-// 				album		text,
-// 				picture		text,
-// 				ssid		text,
-// 				artist      text,
-// 				url         text,
-// 				company     text,
-// 				title       text,
-// 				ratingavg   text,
-// 				length      integer,
-// 				subtype     text,
-// 				publictime  text,
-// 				sid         text,
-// 				aid         text,
-// 				sha256      text,
-// 				kbps        text,
-// 				albumtitle  text,
-// 				like        integer,
-// 				picdata     blob,
-// 				musicdata   blob
-// 			)`
-// 	db.Exec(execSQL)
-//
-// 	// random query a music
-// 	execSQL = `select album,
-// 				  picture,
-// 				  ssid,
-// 				  artist,
-// 				  url,
-// 				  company,
-// 				  title,
-// 				  ratingavg,
-// 				  length,
-// 				  subtype,
-// 				  publictime,
-// 				  sid,
-// 				  aid,
-// 				  sha256,
-// 				  kbps,
-// 				  albumtitle,
-// 				  like,
-// 				  picdata,
-// 				  musicdata
-// 			from music
-// 			order by RANDOM()`
-//
-// 	row := db.QueryRow(execSQL)
-//
-// 	s := doubanfm.Song{}
-// 	var picData []byte
-// 	var musicData []byte
-// 	err = row.Scan(&s.Album,
-// 		&s.Picture,
-// 		&s.SSID,
-// 		&s.Artist,
-// 		&s.URL,
-// 		&s.Company,
-// 		&s.Title,
-// 		&s.RatingAvg,
-// 		&s.Length,
-// 		&s.SubType,
-// 		&s.PublicTime,
-// 		&s.SID,
-// 		&s.AID,
-// 		&s.SHA256,
-// 		&s.Kbps,
-// 		&s.AlbumTitle,
-// 		&s.Like,
-// 		&picData,
-// 		&musicData,
-// 	)
-// 	if err != nil {
-// 		log.Println("[ERROR]: scan music", err)
-// 		return doubanfm.Song{}
-// 	}
-//
-// 	// save picData and musicData to local path
-// 	surl := strings.Split(s.URL, ".")
-// 	ftype := surl[len(surl)-1]
-// 	f, _ := os.Create(DB_PATH + "music." + ftype)
-// 	f.Write(musicData)
-// 	f.Close()
-// 	s.URL = DB_PATH + "music." + ftype
-//
-// 	purl := strings.Split(s.Picture, ".")
-// 	ftype = purl[len(purl)-1]
-// 	f, _ = os.Create(DB_PATH + "pic." + ftype)
-// 	f.Write(picData)
-// 	f.Close()
-// 	s.Picture = DB_PATH + "pic." + ftype
-//
-// 	log.Println("[INFO]:", s.Title)
-//
-// 	time.Sleep(time.Second)
-// 	return s
-// }
-//
-// // Sync music
-// func (m *Music) SyncMusic(channelID, userID, expire, token string, count int) {
-//
-// 	// start a goroutine to sync music to database
-// 	go func() {
-// 		// open database
-// 		db, err := openDB()
-// 		if err != nil {
-// 			log.Println("[ERROR]: db", err)
-// 			return
-// 		}
-// 		// create table for music
-// 		execSQL := `create table if not exists
-// 				music(
-// 					album		text,
-// 					picture		text,
-// 					ssid		text,
-// 					artist      text,
-// 					url         text,
-// 					company     text,
-// 					title       text,
-// 					ratingavg   text,
-// 					length      integer,
-// 					subtype     text,
-// 					publictime  text,
-// 					sid         text,
-// 					aid         text,
-// 					sha256      text,
-// 					kbps        text,
-// 					albumtitle  text,
-// 					like        integer,
-// 					picdata     blob,
-// 					musicdata   blob
-// 				)`
-// 		db.Exec(execSQL)
-// 		db.Close()
-//
-// 		log.Println("-- 开始离线歌曲 --")
-//
-// 		sameSongsRetry := 3
-// 		fm := doubanfm.NewDoubanFM()
-//
-// 		for i := 0; i < count; i++ {
-//
-// 			// TODO: change count
-// 			if m.SyncCount() >= 20 {
-// 				return
-// 			}
-//
-// 			db, err := openDB()
-// 			if err != nil {
-// 				log.Println("[ERROR]: db", err)
-// 				return
-// 			}
-//
-// 			// get songs from star channel
-// 			opts := getDefaultOpts()
-// 			opts["channel"] = channelID
-// 			opts["user_id"] = m.userID
-// 			opts["expire"] = m.expire
-// 			opts["token"] = m.token
-// 			songs, err := fm.Songs(opts)
-// 			if err != nil || len(songs) == 0 {
-// 				i--
-// 				continue
-// 			}
-// 			s := songs[0]
-// 			log.Println("[SYNC Loading]:", s.Artist, s.Title)
-//
-// 			// check if this song already in database
-// 			stmt, _ := db.Prepare("select sid from music where sid=?")
-// 			rows, _ := stmt.Query(s.SID)
-// 			if rows.Next() {
-// 				// 已经同步过
-// 				i--
-// 				sameSongsRetry--
-// 				if sameSongsRetry < 0 {
-// 					rows.Close()
-// 					stmt.Close()
-// 					break
-// 				}
-// 				time.Sleep(time.Second * 5)
-// 				rows.Close()
-// 				stmt.Close()
-// 				continue
-// 			}
-// 			rows.Close()
-// 			stmt.Close()
-//
-// 			// get album picture
-// 			log.Println("[SYNC WORKER]: loading album picture")
-// 			res, err := http.Get(s.Picture)
-// 			if err != nil {
-// 				log.Println("[ERROR]:", err)
-// 				continue
-// 			}
-// 			picData, _ := ioutil.ReadAll(res.Body)
-// 			res.Body.Close()
-// 			log.Println("[SYNC WORKER]: album picture OK")
-//
-// 			// get music
-// 			log.Println("[SYNC WORKER]: loading music")
-// 			res, err = http.Get(s.URL)
-// 			if err != nil {
-// 				log.Println("[ERROR]: network error ", err)
-// 				continue
-// 			}
-// 			musicData, _ := ioutil.ReadAll(res.Body)
-// 			res.Body.Close()
-// 			log.Println("[SYNC WORKER]: music OK")
-//
-// 			// 存储离线音乐
-// 			stmt, _ = db.Prepare("insert into music values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)")
-// 			r, err := stmt.Exec(
-// 				s.Album,
-// 				s.Picture,
-// 				s.SSID,
-// 				s.Artist,
-// 				s.URL,
-// 				s.Company,
-// 				s.Title,
-// 				s.RatingAvg,
-// 				s.Length,
-// 				s.SubType,
-// 				s.PublicTime,
-// 				s.SID,
-// 				s.AID,
-// 				s.SHA256,
-// 				s.Kbps,
-// 				s.AlbumTitle,
-// 				s.Like,
-// 				picData,
-// 				musicData)
-//
-// 			stmt.Close()
-// 			log.Println("[Save]:", r, err)
-//
-// 			db.Close()
-//
-// 			time.Sleep(time.Second * 1)
-// 		}
-// 	}()
-// }
-//
-// // Offline music count
-// func (m *Music) SyncCount() int {
-//
-// 	// open database
-// 	db, err := openDB()
-// 	if err != nil {
-// 		log.Println("[ERROR]: db", err)
-// 		return 0
-// 	}
-// 	defer db.Close()
-//
-// 	// 创建离线数据表
-// 	execSQL := `create table if not exists
-// 			music(
-// 				album		text,
-// 				picture		text,
-// 				ssid		text,
-// 				artist      text,
-// 				url         text,
-// 				company     text,
-// 				title       text,
-// 				ratingavg   text,
-// 				length      integer,
-// 				subtype     text,
-// 				publictime  text,
-// 				sid         text,
-// 				aid         text,
-// 				sha256      text,
-// 				kbps        text,
-// 				albumtitle  text,
-// 				like        integer,
-// 				picdata     blob,
-// 				musicdata   blob
-// 			)`
-// 	db.Exec(execSQL)
-//
-// 	execSQL = "select count(sid) from music"
-// 	row := db.QueryRow(execSQL)
-// 	var count int
-// 	row.Scan(&count)
-//
-// 	return count
-// }
+// Offline music count
+func (m *Music) SyncCount() int {
+
+	checkTableMusic()
+	// open database
+	db, err := openDB()
+	if err != nil {
+		log.Println("[ERROR]: db", err)
+		return 0
+	}
+	defer db.Close()
+
+	execSQL := "select count(sid) from music"
+	row := db.QueryRow(execSQL)
+	var count int
+	row.Scan(&count)
+
+	return count
+}
 
 // Clear music list
 func (m *Music) Clear() {
@@ -533,64 +356,13 @@ func (m *Music) ClearSync() {
 		return
 	}
 	defer db.Close()
-	// 创建离线数据表
-	execSQL := "drop table music"
+	execSQL := "delete from music"
 	db.Exec(execSQL)
+	os.RemoveAll(MUSIC_PATH)
+	os.RemoveAll(PICTURE_PATH)
+	os.Mkdir(MUSIC_PATH, os.ModePerm)
+	os.Mkdir(PICTURE_PATH, os.ModePerm)
 }
-
-// Mark like this music
-// func (m *Music) Like(userID, expire, token, musicID string) {
-//
-// 	opts := getDefaultOpts()
-// 	opts["user_id"] = userID
-// 	opts["expire"] = expire
-// 	opts["token"] = token
-// 	opts["sid"] = musicID
-// 	opts["type"] = "r"
-//
-// 	fm := doubanfm.NewDoubanFM()
-//
-// 	songs, err := fm.Songs(opts)
-// 	if err == nil && len(songs) != 0 {
-// 		m.List = append(m.List, songs...)
-// 	}
-// }
-
-// Mark dislike this music
-// func (m *Music) Dislike(userID, expire, token, musicID string) {
-//
-// 	opts := getDefaultOpts()
-// 	opts["user_id"] = userID
-// 	opts["expire"] = expire
-// 	opts["token"] = token
-// 	opts["sid"] = musicID
-// 	opts["type"] = "u"
-//
-// 	fm := doubanfm.NewDoubanFM()
-//
-// 	songs, err := fm.Songs(opts)
-// 	if err == nil && len(songs) != 0 {
-// 		m.List = append(m.List, songs...)
-// 	}
-// }
-
-// Mark ban this music
-// func (m *Music) Ban(userID, expire, token, musicID string) {
-//
-// 	opts := getDefaultOpts()
-// 	opts["user_id"] = userID
-// 	opts["expire"] = expire
-// 	opts["token"] = token
-// 	opts["sid"] = musicID
-// 	opts["type"] = "b"
-//
-// 	fm := doubanfm.NewDoubanFM()
-//
-// 	songs, err := fm.Songs(opts)
-// 	if err == nil && len(songs) != 0 {
-// 		m.List = append(m.List, songs...)
-// 	}
-// }
 
 // ==================================================
 // Channels
@@ -706,20 +478,6 @@ func (user *DoubanUser) GetCaptcha() Captcha {
 	}
 	return captchaData
 }
-
-// func (user *DoubanUser) Login(email, password string) *doubanfm.User {
-//
-// 	fm := doubanfm.NewDoubanFM()
-// 	u, err := fm.Login(email, password)
-//
-// 	if err != nil {
-// 		return &doubanfm.User{
-// 			ERR:    err.Error(),
-// 			Result: 1,
-// 		}
-// 	}
-// 	return u
-// }
 
 // ==================================================
 // Weibo
@@ -887,4 +645,36 @@ func checkLogout(err error) error {
 		return nil
 	}
 	return err
+}
+
+// create table music if not exists
+func checkTableMusic() {
+	// open database
+	db, err := openDB()
+	if err != nil {
+		log.Println("[ERROR]: db", err)
+		return
+	}
+	defer db.Close()
+	// create table music
+	execSQL := `create table if not exists
+				music(
+					picture		text,
+					albumTitle  text,
+					like        integer,
+					album		text,
+					ssid		text,
+					title       text,
+					url         text,
+					artist      text,
+					subType     text,
+					length      integer,
+					sid         text,
+					aid         text,
+					company     text,
+					publicTime text,
+					sha256      text,
+					kbps        text
+				)`
+	db.Exec(execSQL)
 }

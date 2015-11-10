@@ -212,7 +212,7 @@ Page {
                         }
                         if (checked && networkingStatus()) {
                             var user = storage.getDoubanUser();
-                            syncMusic("-3", user.user_id, user.expire, user.token)
+                            syncMusic("-3")
                         }
                         storage.setConfig("sync", String(checked))
                     }

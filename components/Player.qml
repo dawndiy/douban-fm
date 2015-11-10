@@ -22,9 +22,14 @@ Item {
      * Play next music
      */
     function nextMusic() {
-        var music = DoubanMusic.next();
+        var music;
+        if (networkingStatus()) {
+            music = DoubanMusic.next();
+        } else {
+            music = storage.getMusic();
+        }
         player.currentMusic = music;
-        if (music.title) {
+        if (music && music.title) {
             currentMetaTitle = music.title;
             currentMetaArtist = music.artist;
             currentMetaAlbum = "<" + music.albumTitle + "> " + music.publicTime;
@@ -41,11 +46,16 @@ Item {
      * skip current music
      */
     function skip() {
-        var sid = player.currentMusic.sid;
-        var pt = String((player.position/1000).toFixed(1));
-        var music = DoubanMusic.skipMusic(sid, pt, player.currentMetaChannelID);
+        var music;
+        if (networkingStatus()) {
+            var sid = player.currentMusic ? player.currentMusic.sid : "";
+            var pt = String((player.position/1000).toFixed(1));
+            music = DoubanMusic.skipMusic(sid, pt, player.currentMetaChannelID);
+        } else {
+            music = storage.getMusic();
+        }
         player.currentMusic = music;
-        if (music.title) {
+        if (music && music.title) {
             currentMetaTitle = music.title;
             currentMetaArtist = music.artist;
             currentMetaAlbum = "<" + music.albumTitle + "> " + music.publicTime;
@@ -64,7 +74,7 @@ Item {
     function changeChannel(channel_id) {
         var music = DoubanMusic.changeChannel(channel_id);
         player.currentMusic = music;
-        if (music.title) {
+        if (music && music.title) {
             currentMetaTitle = music.title;
             currentMetaArtist = music.artist;
             currentMetaAlbum = "<" + music.albumTitle + "> " + music.publicTime;
@@ -201,7 +211,9 @@ Item {
                     if (status == MediaPlayer.EndOfMedia) {
                         // play end
                         playedMetric.increment();
-                        reportEnd();
+                        if (networkingStatus()) {
+                            reportEnd();
+                        }
                         nextMusic();
                     }
                 }

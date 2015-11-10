@@ -74,16 +74,13 @@ MainView {
      * sync music
      *
      * channel_id: maybe "-3", like channel
-     * user_id: Douban Account user id
-     * expire: Douban Account user auth expire
-     * token: Douban Account user auth token
      * count: 20 TODO: set count
      */
-    function syncMusic(channel_id, user_id, expire, token, count) {
+    function syncMusic(channel_id, count) {
         var offline_music_count = 20 - DoubanMusic.syncCount();
         if (offline_music_count > 0) {
             notification(i18n.tr("Start Sync songs..."))
-            DoubanMusic.syncMusic(channel_id, user_id, expire, token, offline_music_count);
+            DoubanMusic.syncMusic(channel_id, offline_music_count);
         }
     }
 
@@ -112,10 +109,9 @@ MainView {
                 storage.clearDoubanUser();
                 return;
             }
-            console.debug("--", user.dbcl2)
             DoubanMusic.setDBCL2(user.dbcl2);
-            if (storage.getConfig("sync") == "true") {
-                syncMusic("-3", user.user_id, user.expire, user.token)
+            if (storage.getConfig("sync") == "true" && is_online) {
+                syncMusic("-3")
             }
         }
         if (isLoginWeibo()) {
