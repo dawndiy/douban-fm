@@ -45,7 +45,7 @@ Dialog {
         Image {
             id: captchaImage
             width: parent.width
-            fillMode: Image.PreserveAspectFit
+            fillMode: Image.PreserveAspectCrop
 
             Component.onCompleted: {
                 var captcha_data = DoubanUser.getCaptcha();
