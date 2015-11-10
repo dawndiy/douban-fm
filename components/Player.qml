@@ -19,56 +19,70 @@ Item {
     readonly property var playbackState: mediaPlayerLoader.status == Loader.Ready ? mediaPlayerLoader.item.playbackState : MediaPlayer.StoppedState
 
     /**
-     * Get music
-     */
-    function getMusic(channel_id) {
-        channel_id = String(channel_id || currentMetaChannelID || "0");
-        var music;
-        // get music from backend
-        if (!networkingStatus()) {
-            // no network, get offline music
-            music = DoubanMusic.nextOfflineMusic();
-        } else if (isLoginDouban()) {
-            // logged in, get music with userinfo
-            var user = storage.getDoubanUser();
-            music = DoubanMusic.nextWithUser(channel_id, user.user_id, user.expire, user.token);
-        } else {
-            if (channel_id == "-3") {
-                notification("Please login Douban account!");
-                currentMetaChannelID = "0";
-                currentMetaChannelIndex = 0;
-                channel_id = 0;
-            }
-            // get music normally
-            music = DoubanMusic.next(channel_id);
-        }
-        if (music && music.title) {
-            console.debug(music.title);
-            if (music.like == 1) {
-                currentMetaLike = true;
-            } else {
-                currentMetaLike = false;
-            }
-        }
-        return music;
-    }
-
-    /**
      * Play next music
      */
-    function nextMusic(channel_id) {
-        var music = getMusic(channel_id);
-        player.currentMusic = music
+    function nextMusic() {
+        var music = DoubanMusic.next();
+        player.currentMusic = music;
         if (music.title) {
             currentMetaTitle = music.title;
             currentMetaArtist = music.artist;
             currentMetaAlbum = "<" + music.albumTitle + "> " + music.publicTime;
             currentMetaArt = "";    // force to change image source
             currentMetaArt = music.picture;
+            currentMetaLike = (music.like == 1)
             playMusic(music.url);
         } else {
             notification(i18n.tr("No more songs"));
         }
+    }
+
+    /**
+     * skip current music
+     */
+    function skip() {
+        var sid = player.currentMusic.sid;
+        var pt = String((player.position/1000).toFixed(1));
+        var music = DoubanMusic.skipMusic(sid, pt, player.currentMetaChannelID);
+        player.currentMusic = music;
+        if (music.title) {
+            currentMetaTitle = music.title;
+            currentMetaArtist = music.artist;
+            currentMetaAlbum = "<" + music.albumTitle + "> " + music.publicTime;
+            currentMetaArt = "";    // force to change image source
+            currentMetaArt = music.picture;
+            currentMetaLike = (music.like == 1)
+            playMusic(music.url);
+        } else {
+            notification(i18n.tr("No more songs"));
+        }
+    }
+
+    /**
+     * Change channel
+     */
+    function changeChannel(channel_id) {
+        var music = DoubanMusic.changeChannel(channel_id);
+        player.currentMusic = music;
+        if (music.title) {
+            currentMetaTitle = music.title;
+            currentMetaArtist = music.artist;
+            currentMetaAlbum = "<" + music.albumTitle + "> " + music.publicTime;
+            currentMetaArt = "";    // force to change image source
+            currentMetaArt = music.picture;
+            currentMetaLike = (music.like == 1)
+            playMusic(music.url);
+        } else {
+            notification(i18n.tr("No more songs"));
+        }
+    }
+
+    /**
+     * Report end
+     */
+    function reportEnd() {
+        var pt = String((player.position/1000).toFixed(1));
+        DoubanMusic.reportEnd(player.currentMusic.sid, pt, player.currentMetaChannelID);
     }
 
     /**
@@ -81,34 +95,43 @@ Item {
     }
 
     /**
-     * Like this music
+     * Rate this music
      */
-    function likeMusic() {
-        var user = storage.getDoubanUser();
-        if (user) {
-            DoubanMusic.like(user.user_id, user.expire, user.token, currentMusic.sid)
-            currentMetaLike = true;
-        }
+    function rateMusic() {
+        var sid = player.currentMusic.sid;
+        var pt = String((player.position/1000).toFixed(1));
+        DoubanMusic.rateMusic(sid, pt, player.currentMetaChannelID)
+        player.currentMetaLike = true;
     }
 
     /**
-     * Like this music
+     * Unrate this music
      */
-    function dislikeMusic() {
-        var user = storage.getDoubanUser();
-        if (user) {
-            DoubanMusic.dislike(user.user_id, user.expire, user.token, currentMusic.sid)
-            currentMetaLike = false;
-        }
+    function unrateMusic() {
+        var sid = player.currentMusic.sid;
+        var pt = String((player.position/1000).toFixed(1));
+        DoubanMusic.unrateMusic(sid, pt, player.currentMetaChannelID)
+        player.currentMetaLike = false;
     }
 
     /**
-     * ban this music
+     * Ban this music
      */
     function banMusic() {
-        var user = storage.getDoubanUser();
-        if (user) {
-            DoubanMusic.ban(user.user_id, user.expire, user.token, currentMusic.sid)
+        var sid = player.currentMusic.sid;
+        var pt = String((player.position/1000).toFixed(1));
+        var music = DoubanMusic.banMusic(sid, pt, player.currentMetaChannelID);
+        player.currentMusic = music;
+        if (music.title) {
+            currentMetaTitle = music.title;
+            currentMetaArtist = music.artist;
+            currentMetaAlbum = "<" + music.albumTitle + "> " + music.publicTime;
+            currentMetaArt = "";    // force to change image source
+            currentMetaArt = music.picture;
+            currentMetaLike = (music.like == 1)
+            playMusic(music.url);
+        } else {
+            notification(i18n.tr("No more songs"));
         }
     }
 
@@ -152,11 +175,6 @@ Item {
         mediaPlayerLoader.item.source = Qt.resolvedUrl(filepath);
     }
 
-    // WorkerScript {
-    //     id: playerWorker
-    //     source: Qt.resolvedUrl("../js/douban.js")
-    // }
-
     Loader {
         id: mediaPlayerLoader
         asynchronous: true
@@ -181,7 +199,9 @@ Item {
                     console.debug("[Signal: StatusChanged] status:", status, ",duration:", player.duration)
                     player.status = status;
                     if (status == MediaPlayer.EndOfMedia) {
+                        // play end
                         playedMetric.increment();
+                        reportEnd();
                         nextMusic();
                     }
                 }
@@ -190,8 +210,8 @@ Item {
     }
 
     onCurrentMetaChannelIDChanged: {
-        console.debug("[Signal: CurrentMetaChannelIDChanged]: ", currentMetaChannelID, DoubanChannels.channelByID(Number(currentMetaChannelID)).name)
-        nextMusic();
+        console.debug("[Signal: CurrentMetaChannelIDChanged]: ", currentMetaChannelID, DoubanChannels.channelByID(Number(currentMetaChannelID)).name);
+        changeChannel(currentMetaChannelID);
     }
 
     onCurrentMusicChanged: {

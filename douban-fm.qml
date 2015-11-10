@@ -105,13 +105,15 @@ MainView {
         // Check whether the user authorization expired
         if (isLoginDouban()) {
             var user = storage.getDoubanUser();
-            var expire = Number(user.expire);
+            var expire = Number(user.expires);
             var now = +new Date() / 1000;
             if (now > expire) {
                 notification(i18n.tr("User authorization expired, please login again."), 10)
                 storage.clearDoubanUser();
                 return;
             }
+            console.debug("--", user.dbcl2)
+            DoubanMusic.setDBCL2(user.dbcl2);
             if (storage.getConfig("sync") == "true") {
                 syncMusic("-3", user.user_id, user.expire, user.token)
             }
@@ -165,7 +167,7 @@ MainView {
         onDetected: {
             console.debug("[GESTURE]:", gesture)
             if (storage.getConfig("shake") == "true") {
-                player.nextMusic();
+                player.skip();
             }
         }
     }

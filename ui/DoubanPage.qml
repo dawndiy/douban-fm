@@ -19,15 +19,15 @@ Page {
      */
     function musicLike() {
         console.debug("[Func: musicLike]", !player.currentMetaLike, player.currentMusic.sid, player.currentMusic.title);
-        if (!isLoginDouban()) {
-            notification(i18n.tr("Please login Douban Account first!"))
-            return;
-        }
+        // if (!isLoginDouban()) {
+        //     notification(i18n.tr("Please login Douban Account first!"))
+        //     return;
+        // }
         // check current music
         if (player.currentMetaLike == true) {
-            player.dislikeMusic();
+            player.unrateMusic();
         } else {
-            player.likeMusic();
+            player.rateMusic();
         }
     }
 
@@ -36,12 +36,11 @@ Page {
      */
     function musicBan() {
         console.debug("[Func: musicBan]", player.currentMusic.sid, player.currentMusic.title);
-        if (!isLoginDouban()) {
-            notification(i18n.tr("Please login Douban Account first!"))
-            return;
-        }
+        // if (!isLoginDouban()) {
+        //     notification(i18n.tr("Please login Douban Account first!"))
+        //     return;
+        // }
         player.banMusic();
-        player.nextMusic();
     }
 
     /**
@@ -278,7 +277,7 @@ Page {
                     if (player.playbackState != MediaPlayer.PausedState) {
                         console.debug("[Action: Next]");
                         Haptics.play();
-                        player.nextMusic();
+                        player.skip();
                     }
                 }
             }

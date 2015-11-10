@@ -42,7 +42,7 @@ Item {
     }
 
     UbuntuShape {
-        color: UbuntuColors.darkGrey
+        backgroundColor: UbuntuColors.darkGrey
         anchors.fill: parent
         Label {
             id: label

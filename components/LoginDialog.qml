@@ -5,6 +5,9 @@ import QtQuick.LocalStorage 2.0
 
 Dialog {
     id: dialog
+
+    property string captchaId: ""
+
     title: i18n.tr("Log in")
     text: i18n.tr("Log in with Douban account")
 
@@ -33,6 +36,26 @@ Dialog {
             echoMode: TextInput.Password
         }
 
+        TextField {
+            id: captchaText
+            width: parent.width
+            placeholderText: i18n.tr("captcha")
+        }
+
+        Image {
+            id: captchaImage
+            width: parent.width
+            fillMode: Image.PreserveAspectFit
+
+            Component.onCompleted: {
+                var captcha_data = DoubanUser.getCaptcha();
+                if (captcha_data.result == true) {
+                    dialog.captchaId = captcha_data.captchaID;
+                    captchaImage.source = "data:image/jpeg;base64," + captcha_data.captchaImage;
+                }
+            }
+        }
+
         Row {
             width: parent.width
             spacing: units.gu(1)
@@ -44,22 +67,26 @@ Dialog {
                     console.debug("login douban");
                     loginAlert.visible = false;
                     loginAlert.text = "";
-                    var result = DoubanUser.login(email.text, password.text);
-                    if (result.result == 0) {
+                    var result = DoubanUser.login(email.text, password.text, captchaText.text, dialog.captchaId);
+                    // login success
+                    if (result.result == true) {
+                        var account = result.user;
                         var user = {
-                            user_id: result.id,
-                            token: result.token,
-                            expire: result.expire,
-                            user_name: result.name,
-                            email: result.email
+                            id: account.id,
+                            uid: account.uid,
+                            name: account.name,
+                            expires: account.expires,
+                            dbcl2: account.dbcL2
                         }
+                        console.debug("USER: ", user)
                         storage.saveDoubanUser(user);
-                        loginDoubanLabel.text = user.user_name;
+                        loginDoubanLabel.text = user.name;
                         PopupUtils.close(dialog)
                     } else {
                         // Email or Password error
-                        console.debug(result.err, result.result)
-                        loginAlert.text = i18n.tr("Wrong email or password! Please try again.")
+                        console.debug(result.message, result.result)
+                        // loginAlert.text = i18n.tr("Wrong email or password! Please try again.")
+                        loginAlert.text = result.message
                         loginAlert.visible = true
                     }
                 }

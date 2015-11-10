@@ -75,6 +75,7 @@ Page {
             text: "Logout Douban Account?"
             onConfirm: {
                 storage.clearDoubanUser();
+                DoubanUser.logout();
                 loginDoubanLabel.text = i18n.tr("Login Douban FM");
             }
         }
@@ -131,7 +132,7 @@ Page {
                         leftMargin: units.gu(2)
                         verticalCenter: parent.verticalCenter
                     }
-                    text: isLoginDouban()? storage.getDoubanUser().user_name : i18n.tr("Login Douban FM")
+                    text: isLoginDouban()? storage.getDoubanUser().name : i18n.tr("Login Douban FM")
                 }
                 onClicked: {
                     if (!isLoginDouban()) {

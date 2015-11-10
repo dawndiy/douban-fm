@@ -31,6 +31,16 @@ Item {
             // reopen database with new version number
             db = LocalStorage.openDatabaseSync("douban-fm", "", "StorageDatabase", 100000);
         }
+
+        if (db.version === "0.2.0") {
+            db.changeVersion("0.2.0", "0.2.2", function(tx) {
+                tx.executeSql("drop table if exists user");
+                tx.executeSql("create table if not exists user(id text, uid text, name text, expires text, dbcl2 text)");
+                console.log("[DATABASE]: Database upgraded to v0.2.2");
+            });
+            // reopen database with new version number
+            db = LocalStorage.openDatabaseSync("douban-fm", "", "StorageDatabase", 100000);
+        }
     }
 
     /**
@@ -39,11 +49,11 @@ Item {
     function saveDoubanUser(user) {
         openDB();
         db.transaction(function(tx) {
-            tx.executeSql("create table if not exists user(user_id text, token text, expire text, user_name text, email text)");
+            //tx.executeSql("create table if not exists user(user_id text, token text, expire text, user_name text, email text)");
             tx.executeSql("delete from user");
             tx.executeSql(
                 "insert into user values(?, ?, ?, ?, ?)", 
-                [user.user_id, user.token, user.expire, user.user_name, user.email]);
+                [user.uid, user.id, user.name, user.expires, user.dbcl2]);
         });
     }
 
@@ -54,8 +64,9 @@ Item {
         openDB();
         var user;
         db.transaction(function(tx) {
-            tx.executeSql("create table if not exists user(user_id text, token text, expire text, user_name text, email text)");
-            var rs = tx.executeSql("select user_id, token, expire, user_name, email from user");
+            //tx.executeSql("create table if not exists user(user_id text, token text, expire text, user_name text, email text)");
+            //var rs = tx.executeSql("select user_id, token, expire, user_name, email from user");
+            var rs = tx.executeSql("select uid, id, name, expires, dbcl2 from user");
             if (rs.rows.length != 0) {
                 user = rs.rows.item(0);
             }
@@ -68,7 +79,7 @@ Item {
     function clearDoubanUser() {
         openDB();
         db.transaction(function(tx) {
-            tx.executeSql("create table if not exists user(user_id text, token text, expire text, user_name text, email text)");
+            //tx.executeSql("create table if not exists user(user_id text, token text, expire text, user_name text, email text)");
             tx.executeSql("delete from user");
         });
     }
