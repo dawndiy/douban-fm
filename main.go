@@ -607,7 +607,7 @@ func openDB() (*sql.DB, error) {
 	fi, _ := dataDir.Readdir(-1)
 	var dbfile string
 	for _, i := range fi {
-		if strings.Contains(i.Name(), ".sqlite") {
+		if strings.HasSuffix(i.Name(), ".sqlite") {
 			dbfile = DB_PATH + i.Name()
 			break
 		}
