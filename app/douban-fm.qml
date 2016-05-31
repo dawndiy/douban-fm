@@ -1,11 +1,12 @@
 import QtQuick 2.4
 import QtSensors 5.0
 import UserMetrics 0.1
-import Ubuntu.Components 1.2
+import Ubuntu.Components 1.3
 import Ubuntu.Connectivity 1.0
-import "data"
+import "js"
 import "components"
 import "ui"
+import Ubuntu.PerformanceMetrics 0.1
 
 
 MainView {
@@ -27,9 +28,14 @@ MainView {
     width: units.gu(50)
     height: units.gu(75)
 
+    property var offlineMusicList
+
     Component.onCompleted: {
+        pageStack.push(tabs)
+        console.log("**************", pageStack.currentPage, pageStack.currentPage.showToolbar)
         console.debug("[DoubanUser]", isLoginDouban());
         console.debug("[WeiboUser]", isLoginWeibo());
+        offlineMusicList = storage.getMusicList()
         start();
     }
 
@@ -45,7 +51,8 @@ MainView {
      * Networking status
      */
     function networkingStatus() {
-        return NetworkingStatus.online;
+        console.log(NetworkingStatus.online, IsDesktop)
+        return NetworkingStatus.online || IsDesktop;
     }
 
     /**
@@ -144,6 +151,12 @@ MainView {
 
     Player {
         id: player
+        objectName: "player"
+    }
+
+    DoubanAPIHandler {
+        id: doubanAPIHandler
+        objectName: "doubanAPIHandler"
     }
 
     // SensorGesture
@@ -168,10 +181,64 @@ MainView {
         }
     }
 
+    Loader {
+        id: musicToolbar
+        anchors {
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+        }
+        asynchronous: true
+        visible: pageStack.currentPage.showToolbar || pageStack.currentPage.showToolbar === undefined
+        source: Qt.resolvedUrl("components/MusicToolbar.qml")
+        z: 200  // put on top of everything else
+    }
+
     PageStack {
         id: pageStack
-        Component.onCompleted: {
-            push(Qt.resolvedUrl("ui/DoubanPage.qml"))
+
+        Tabs {
+            id: tabs
+
+            property bool showToolbar: (currentPage.showToolbar || currentPage.showToolbar === undefined) ? true : false
+
+            Tab {
+                id: doubanTab
+                title: page.title
+                page: DoubanPage {
+                    id: doubanPage
+                }
+            }
+
+            Tab {
+                id: channelTab
+                title: page.title
+                page: ChannelPage {
+                    id: channelPage
+                }
+            }
+
+            Tab {
+                id: accountTab
+                title: page.title
+                page: AccountPage {
+                    id: accountPage
+                }
+            }
+
+            Tab {
+                id: settingsTab
+                title: page.title
+                page: SettingsPage {
+                    id: settingsPage
+                }
+            }
+
         }
     }
+
+    PerformanceOverlay {
+        active: false
+    }
+
 }

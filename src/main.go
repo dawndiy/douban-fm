@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
+	Log "log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -30,6 +30,8 @@ var (
 	DB_PATH       string
 	MUSIC_PATH    string
 	PICTURE_PATH  string
+	root          qml.Object
+	log           *Log.Logger = Log.New(os.Stdout, "", Log.LstdFlags|Log.Lshortfile)
 )
 
 func init() {
@@ -70,12 +72,18 @@ func run() error {
 	context.SetVar("DoubanUser", &DoubanUser{})
 	context.SetVar("Weibo", getWeibo())
 	context.SetVar("ApplicationVersion", ApplicationVersion)
+	isDesktop := false
+	if os.Getenv("XDG_DATA_HOME") == "" {
+		isDesktop = true
+	}
+	context.SetVar("IsDesktop", isDesktop)
 
-	component, err := engine.LoadFile("douban-fm.qml")
+	component, err := engine.LoadFile("app/douban-fm.qml")
 	if err != nil {
 		return err
 	}
 	win := component.CreateWindow(nil)
+	root = win.Root()
 	win.Show()
 	win.Wait()
 	return nil
@@ -88,6 +96,7 @@ func run() error {
 type Music struct {
 	List             []doubanfm.Song
 	CurrentChannenID string
+	OfflineList      []doubanfm.Song
 }
 
 // NewList get new play list
@@ -100,23 +109,37 @@ func (m *Music) NewList() error {
 	return nil
 }
 
-// Skip to skip current playing music
-func (m *Music) SkipMusic(sid, position string) doubanfm.Song {
-	// clear current play list
-	m.Clear()
-	// get a new play list
-	songs, err := doubanfm.PlayListSkip(sid, position, m.CurrentChannenID)
-	if checkLogout(err) != nil || len(songs) == 0 {
-		checkLogout(err)
-		log.Println("[ERROR]: network error ", err)
-		return doubanfm.Song{}
-	}
-	m.List = append(m.List, songs...)
-	next := m.List[0]
-	m.List = m.List[1:]
-	// get more songs to play list
-	m.More(next.SID)
-	return next
+// SkipMusic to skip current playint music
+func (m *Music) SkipMusic(sid, position string) {
+
+	ch := make(chan doubanfm.Song)
+
+	go func(ch chan doubanfm.Song) {
+		// clear current play list
+		m.Clear()
+		// get a new play list
+		songs, err := doubanfm.PlayListSkip(sid, position, m.CurrentChannenID)
+		if checkLogout(err) != nil || len(songs) == 0 {
+			checkLogout(err)
+			log.Println("[ERROR]: network error ", err)
+			ch <- doubanfm.Song{}
+			return
+		}
+		m.List = append(m.List, songs...)
+		next := m.List[0]
+		m.List = m.List[1:]
+		// get more songs to play list
+		m.More(next.SID)
+		//time.Sleep(time.Second * 2)
+		ch <- next
+	}(ch)
+
+	go func(ch chan doubanfm.Song) {
+		song := <-ch
+		handler := root.ObjectByName("doubanAPIHandler")
+		handler.Call("emitSignalWithObj", "musicLoaded", song)
+	}(ch)
+
 }
 
 // More get more music
@@ -134,79 +157,116 @@ func (m *Music) More(sid string) error {
 
 // ReportEnd report when finished the music
 func (m *Music) ReportEnd(sid, position string) {
-	doubanfm.PlayListEnd(sid, position, m.CurrentChannenID)
+	go doubanfm.PlayListEnd(sid, position, m.CurrentChannenID)
 }
 
-// Next get next music
-func (m *Music) Next() doubanfm.Song {
+// Next music
+func (m *Music) Next() {
+	ch := make(chan doubanfm.Song)
 
-	next := doubanfm.Song{}
+	go func(ch chan doubanfm.Song) {
+		next := doubanfm.Song{}
 
-	if len(m.List) == 0 {
-		err := m.NewList()
+		if len(m.List) == 0 {
+			err := m.NewList()
+			if err != nil {
+				log.Println("[ERROR]: network error ", err)
+				ch <- next
+				return
+			}
+		}
+		next = m.List[0]
+		m.List = m.List[1:]
+		m.More(next.SID)
+		//time.Sleep(time.Second * 2)
+		ch <- next
+	}(ch)
+
+	go func(ch chan doubanfm.Song) {
+		song := <-ch
+		handler := root.ObjectByName("doubanAPIHandler")
+		handler.Call("emitSignalWithObj", "musicLoaded", song)
+	}(ch)
+}
+
+// ChangeChannel to new channel
+func (m *Music) ChangeChannel(channelID string) {
+	ch := make(chan doubanfm.Song)
+
+	go func(chan doubanfm.Song) {
+		m.Clear()
+		err := doubanfm.ChannelChange(m.CurrentChannenID, channelID, "recent_chls")
+		checkLogout(err)
+		m.CurrentChannenID = channelID
+
+		err = m.NewList()
 		if err != nil {
 			log.Println("[ERROR]: network error ", err)
-			return doubanfm.Song{}
+			ch <- doubanfm.Song{}
+			return
 		}
-	}
-	next = m.List[0]
-	m.List = m.List[1:]
-	m.More(next.SID)
+		next := m.List[0]
+		m.List = m.List[1:]
+		m.More(next.SID)
+		ch <- next
+	}(ch)
 
-	return next
-}
-
-// ChangeChannel
-func (m *Music) ChangeChannel(channelID string) doubanfm.Song {
-	m.Clear()
-	err := doubanfm.ChannelChange(m.CurrentChannenID, channelID, "recent_chls")
-	checkLogout(err)
-	m.CurrentChannenID = channelID
-
-	err = m.NewList()
-	if err != nil {
-		log.Println("[ERROR]: network error ", err)
-		return doubanfm.Song{}
-	}
-	next := m.List[0]
-	m.List = m.List[1:]
-	m.More(next.SID)
-	return next
+	go func(chan doubanfm.Song) {
+		song := <-ch
+		handler := root.ObjectByName("doubanAPIHandler")
+		handler.Call("emitSignalWithObj", "channelChanged", song)
+	}(ch)
 }
 
 // Ban this music
-func (m *Music) BanMusic(sid, position, channelID string) doubanfm.Song {
-	m.Clear()
-	songs, err := doubanfm.PlayListBan(sid, position, channelID)
-	if checkLogout(err) != nil || len(songs) == 0 {
-		log.Println("[ERROR]: network error ", err)
-		return doubanfm.Song{}
-	}
-	m.List = append(m.List, songs...)
-	next := m.List[0]
-	m.List = m.List[1:]
-	m.More(next.SID)
-	return next
+func (m *Music) BanMusic(sid, position, channelID string) {
+	ch := make(chan doubanfm.Song)
+
+	go func(chan doubanfm.Song) {
+		m.Clear()
+		songs, err := doubanfm.PlayListBan(sid, position, channelID)
+		if checkLogout(err) != nil || len(songs) == 0 {
+			log.Println("[ERROR]: network error ", err)
+			ch <- doubanfm.Song{}
+			return
+		}
+		m.List = append(m.List, songs...)
+		next := m.List[0]
+		m.List = m.List[1:]
+		m.More(next.SID)
+		ch <- next
+	}(ch)
+
+	go func(chan doubanfm.Song) {
+		song := <-ch
+		handler := root.ObjectByName("doubanAPIHandler")
+		handler.Call("emitSignalWithObj", "musicBanned", song)
+	}(ch)
 }
 
 // Rate this music
 func (m *Music) RateMusic(sid, position, channelID string) {
-	songs, err := doubanfm.PlayListRate(sid, position, channelID)
-	if checkLogout(err) != nil || len(songs) == 0 {
-		log.Println("[ERROR]: network error ", err)
-		return
-	}
-	m.List = append(m.List, songs...)
+
+	go func(sid, position, channelID string) {
+		songs, err := doubanfm.PlayListRate(sid, position, channelID)
+		if checkLogout(err) != nil || len(songs) == 0 {
+			log.Println("[ERROR]: network error ", err)
+			return
+		}
+		m.List = append(m.List, songs...)
+	}(sid, position, channelID)
 }
 
 // Unrate this music
 func (m *Music) UnrateMusic(sid, position, channelID string) {
-	songs, err := doubanfm.PlayListUnrate(sid, position, channelID)
-	if checkLogout(err) != nil || len(songs) == 0 {
-		log.Println("[ERROR]: network error ", err)
-		return
-	}
-	m.List = append(m.List, songs...)
+	go func(sid, position, channelID string) {
+		songs, err := doubanfm.PlayListUnrate(sid, position, channelID)
+		if checkLogout(err) != nil || len(songs) == 0 {
+			log.Println("[ERROR]: network error ", err)
+			return
+		}
+		m.List = append(m.List, songs...)
+	}(sid, position, channelID)
 }
 
 // SetDBCL2 set user auth
@@ -477,6 +537,31 @@ func (user *DoubanUser) GetCaptcha() Captcha {
 		captchaID,
 	}
 	return captchaData
+}
+
+func (user *DoubanUser) GetVerificationCode() {
+	ch := make(chan Captcha)
+
+	go func(ch chan Captcha) {
+		captcha, captchaID, err := doubanfm.Captcha()
+		result := true
+		if err != nil {
+			result = false
+		}
+		captchaData := Captcha{
+			result,
+			captcha,
+			captchaID,
+		}
+		ch <- captchaData
+	}(ch)
+
+	go func(ch chan Captcha) {
+		captcha := <-ch
+		handler := root.ObjectByName("doubanAPIHandler")
+		argString := strings.Join([]string{captcha.CaptchaID, captcha.CaptchaImage}, ",")
+		handler.Call("emitSignal", "captchaImageLoaded", argString)
+	}(ch)
 }
 
 // ==================================================

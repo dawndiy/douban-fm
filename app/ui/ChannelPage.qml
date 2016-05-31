@@ -1,5 +1,5 @@
 import QtQuick 2.4
-import Ubuntu.Components 1.2
+import Ubuntu.Components 1.3
 import "../components"
 
 Page {
@@ -15,7 +15,10 @@ Page {
 
     ChannelList {
         id: channelList
-        anchors.fill: parent
+        anchors {
+            bottomMargin: musicToolbar.visible ? musicToolbar.height : 0
+            fill: parent
+        }
         selectedIndex: player.currentMetaChannelIndex
 
         onClicked: {
@@ -28,7 +31,8 @@ Page {
 
             player.currentMetaChannelIndex = index;
             player.currentMetaChannelID = DoubanChannels.channel(index).id;
-            pageStack.pop();
+            player.playOffline = false;
+            //pageStack.pop();
         }
     }
 }

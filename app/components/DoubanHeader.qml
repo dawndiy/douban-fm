@@ -1,5 +1,5 @@
 import QtQuick 2.4
-import Ubuntu.Components 1.1
+import Ubuntu.Components 1.3
 
 Item {
 
@@ -11,6 +11,7 @@ Item {
     Image {
         id: image
         source: Qt.resolvedUrl("../images/logo.png");
+        asynchronous: true
         anchors {
             left: parent.left
             verticalCenter: parent.verticalCenter

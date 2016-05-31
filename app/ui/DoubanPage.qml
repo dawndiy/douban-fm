@@ -1,7 +1,7 @@
 import QtQuick 2.4
 import QtMultimedia 5.0
 import QtGraphicalEffects 1.0
-import Ubuntu.Components 1.2
+import Ubuntu.Components 1.3
 import Ubuntu.Connectivity 1.0
 import "../components"
 
@@ -12,7 +12,9 @@ Page {
     property alias title: header.text
     property var currentSong
     property bool currentLike
-    property alias imageUrl: image.source
+    //property alias imageUrl: image.source
+    //property alias imageUrl: imageLoader.item.source
+    property bool showToolbar: false
 
     /**
      * Like this music
@@ -69,18 +71,6 @@ Page {
         }
 
         actions: [
-            // Channel List
-            Action {
-                iconName: "view-list-symbolic"
-                text: i18n.tr("Channels")
-                onTriggered: {
-                    if (!networkingStatus()) {
-                        notification(i18n.tr("No network!"));
-                        return;
-                    }
-                    pageStack.push(Qt.resolvedUrl("ChannelPage.qml"));
-                }
-            },
             // Share
             Action {
                 iconName: "share"
@@ -101,14 +91,20 @@ Page {
                     pageStack.push(Qt.resolvedUrl("SharePage.qml"));
                 }
             },
-            // Settings
+
             Action {
-                iconName: "settings"
-                text: i18n.tr("Settings")
+                iconName: "save"
+                text: i18n.tr("Save")
                 onTriggered: {
-                    pageStack.push(Qt.resolvedUrl("SettingsPage.qml"))
                 }
             }
+
+            // Action {
+            //     iconName: "note"
+            //     text: i18n.tr("Note")
+            //     onTriggered: {
+            //     }
+            // }
         ]
     }
 
@@ -124,13 +120,10 @@ Page {
         color: "grey"
     }
 
-
     // Album Art
-    AlbumArt {
-        id: image
-        source: player.currentMetaArt != "" ? Qt.resolvedUrl(player.currentMetaArt) : Qt.resolvedUrl("../images/logo.png")
-        loading: player.status == MediaPlayer.Buffered || player.status == MediaPlayer.Loaded ? false : true;
-        pause: player.isPlaying ? false : true;
+    Loader {
+        id: imageLoader
+        asynchronous: true
         anchors {
             top: parent.top
             topMargin: units.gu(6)
@@ -141,13 +134,30 @@ Page {
             bottom: parent.bottom
             bottomMargin: units.gu(28)
         }
-        onClicked: {
-            if (player.currentMetaTitle) {
-                image.pause = image.pause ? false : true;
-                if (!image.pause) {
-                    player.play();
-                } else {
-                    player.pause();
+        sourceComponent: Component {
+
+            AlbumArt {
+                source: player.currentMetaArt != "" ? Qt.resolvedUrl(player.currentMetaArt) : Qt.resolvedUrl("../images/logo.png")
+                // loading: player.status == MediaPlayer.Buffered || player.status == MediaPlayer.Loaded ? false : true;
+                loading: player.loading ? true : false
+                // pause: player.isPlaying ? false : true;
+                pause: player.playbackState === MediaPlayer.PausedState ? true : false
+                onClicked: {
+                    if (player.currentMetaTitle) {
+                        pause = pause ? false : true;
+                        if (!pause) {
+                            player.play();
+                        } else {
+                            player.pause();
+                        }
+                    }
+                }
+
+                Connections {
+                    target: player
+                    onIsPlayingChanged: {
+                        pause = !player.isPlaying
+                    }
                 }
             }
         }
@@ -159,7 +169,8 @@ Page {
         text: player.currentMetaArtist
 
         anchors {
-            top: image.bottom
+            //top: image.bottom
+            top: imageLoader.bottom
             topMargin: units.gu(1)
             horizontalCenter: parent.horizontalCenter
         }

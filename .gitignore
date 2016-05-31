@@ -3,4 +3,4 @@ douban-fm/
 douban-fm.*.click
 *.swp
 config.go
-
+fm

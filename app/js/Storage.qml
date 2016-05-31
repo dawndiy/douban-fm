@@ -175,4 +175,17 @@ Item {
             return null;
         }
     }
+
+    function getMusicList() {
+        openDB();
+        var musicList = new Array();
+        db.transaction(function(tx) {
+            tx.executeSql("create table if not exists music(picture text, albumTitle text, like integer, album text, ssid text, title text, url text, artist text, subType text, length integer, sid text, aid text, company text, publicTime text, sha256 text, kbps text)");
+            var rs = tx.executeSql("select picture, albumTitle, like, album, ssid, title, url, artist, subType, length, sid, aid, company, publicTime, sha256, kbps from music order by RANDOM()");
+            for (var i = 0; i < rs.rows.length; i++) {
+                musicList.push(rs.rows.item(i))
+            }
+        });
+        return musicList;
+    }
 }
