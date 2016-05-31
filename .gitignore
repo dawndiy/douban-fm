@@ -1,5 +1,6 @@
 douban-fm
 douban-fm/
+build/
 douban-fm.*.click
 *.swp
 config.go

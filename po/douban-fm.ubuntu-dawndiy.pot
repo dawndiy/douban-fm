@@ -1,0 +1,242 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the douban-fm.ubuntu-dawndiy package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: douban-fm.ubuntu-dawndiy\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-05-31 12:01+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: app/components/LoginDialog.qml:11
+msgid "Log in"
+msgstr ""
+
+#: app/components/LoginDialog.qml:12
+msgid "Log in with Douban account"
+msgstr ""
+
+#: app/components/LoginDialog.qml:30
+msgid "email"
+msgstr ""
+
+#: app/components/LoginDialog.qml:35
+msgid "password"
+msgstr ""
+
+#: app/components/LoginDialog.qml:42
+msgid "captcha"
+msgstr ""
+
+#: app/components/LoginDialog.qml:65
+msgid "login"
+msgstr ""
+
+#: app/components/LoginDialog.qml:97 app/components/LogoutDialog.qml:26
+#: app/ui/SettingsPage.qml:64
+msgid "cancel"
+msgstr ""
+
+#: app/components/LogoutDialog.qml:10
+msgid "Log out"
+msgstr ""
+
+#: app/components/LogoutDialog.qml:11
+msgid "Log out account ?"
+msgstr ""
+
+#: app/components/LogoutDialog.qml:17
+msgid "logout"
+msgstr ""
+
+#: app/components/Player.qml:115 app/components/Player.qml:164
+msgid "No more songs"
+msgstr ""
+
+#: app/components/AboutDialog.qml:9
+msgid "About Douban FM"
+msgstr ""
+
+#: app/components/AboutDialog.qml:38
+msgid "★★★ Wow! You find this Easter egg!★★★ "
+msgstr ""
+
+#: app/components/AboutDialog.qml:52
+msgid "Douban FM for Ubuntu Touch"
+msgstr ""
+
+#: app/components/AboutDialog.qml:63
+msgid "Version: "
+msgstr ""
+
+#: app/components/AboutDialog.qml:72
+msgid "Author: DawnDIY"
+msgstr ""
+
+#: app/components/AboutDialog.qml:81
+msgid "Email: chenglu1990@gmail.com"
+msgstr ""
+
+#: app/components/AboutDialog.qml:90
+msgid "Close"
+msgstr ""
+
+#: app/components/ChannelList.qml:20 app/ui/ChannelPage.qml:12
+msgid "Channels"
+msgstr ""
+
+#: app/douban-fm.qml:89
+msgid "Start Sync songs..."
+msgstr ""
+
+#: app/douban-fm.qml:103 app/ui/DoubanPage.qml:243 app/ui/DoubanPage.qml:266
+msgid "No Network!"
+msgstr ""
+
+#: app/douban-fm.qml:105 app/ui/AccountPage.qml:130
+msgid "Play offline music now..."
+msgstr ""
+
+#: app/douban-fm.qml:115
+msgid "User authorization expired, please login again."
+msgstr ""
+
+#: app/douban-fm.qml:130
+msgid "Weibo authorization expired, please login again."
+msgstr ""
+
+#: app/douban-fm.qml:146
+#, qt-format
+msgid "Douban-FM played <b>%1</b> songs today"
+msgstr ""
+
+#: app/douban-fm.qml:147
+msgid "No songs Douban-FM played today"
+msgstr ""
+
+#: app/ui/SettingsPage.qml:17 app/ui/SettingsPage.qml:186
+msgid "Settings"
+msgstr ""
+
+#: app/ui/SettingsPage.qml:23
+msgid "Info"
+msgstr ""
+
+#: app/ui/SettingsPage.qml:38
+msgid "Login weibo failed!"
+msgstr ""
+
+#: app/ui/SettingsPage.qml:47
+msgid "Clear"
+msgstr ""
+
+#: app/ui/SettingsPage.qml:48
+msgid "Clear all offline music ?"
+msgstr ""
+
+#: app/ui/SettingsPage.qml:54
+msgid "confirm"
+msgstr ""
+
+#: app/ui/SettingsPage.qml:79 app/ui/SettingsPage.qml:135
+msgid "Login Douban FM"
+msgstr ""
+
+#: app/ui/SettingsPage.qml:90 app/ui/SettingsPage.qml:165
+#: app/ui/WeiboLoginPage.qml:37
+msgid "Login Sina Weibo"
+msgstr ""
+
+#: app/ui/SettingsPage.qml:112
+msgid "Account"
+msgstr ""
+
+#: app/ui/SettingsPage.qml:140 app/ui/SettingsPage.qml:175
+#: app/ui/DoubanPage.qml:80
+msgid "No network!"
+msgstr ""
+
+#: app/ui/SettingsPage.qml:192
+msgid "Allow sync offline music"
+msgstr ""
+
+#: app/ui/SettingsPage.qml:208
+msgid "Please login douban account first!"
+msgstr ""
+
+#: app/ui/SettingsPage.qml:225
+msgid "Shake to play next"
+msgstr ""
+
+#: app/ui/SettingsPage.qml:250
+msgid "Clear offline music"
+msgstr ""
+
+#: app/ui/AccountPage.qml:15
+msgid "Offline Music"
+msgstr ""
+
+#: app/ui/AccountPage.qml:201
+msgid "Login Douban Account"
+msgstr ""
+
+#: app/ui/AccountPage.qml:221
+msgid "Username or Email"
+msgstr ""
+
+#: app/ui/AccountPage.qml:228
+msgid "Password"
+msgstr ""
+
+#: app/ui/AccountPage.qml:235
+msgid "Varification Code"
+msgstr ""
+
+#: app/ui/AccountPage.qml:265
+msgid "Login"
+msgstr ""
+
+#: app/ui/DoubanPage.qml:70
+msgid "Douban FM"
+msgstr ""
+
+#: app/ui/DoubanPage.qml:77
+msgid "Share"
+msgstr ""
+
+#: app/ui/DoubanPage.qml:84
+msgid "Please login weibo account first!"
+msgstr ""
+
+#: app/ui/DoubanPage.qml:88
+msgid "No Songs to share."
+msgstr ""
+
+#: app/ui/DoubanPage.qml:97
+msgid "Save"
+msgstr ""
+
+#: app/ui/DoubanPage.qml:119
+msgid "Offline"
+msgstr ""
+
+#: app/ui/SharePage.qml:54
+msgid "ok"
+msgstr ""
+
+#: app/ui/SharePage.qml:85
+msgid "<b>Share to Sina Weibo:</b>"
+msgstr ""
+
+#: app/ui/WeiboLoginPage.qml:30
+msgid "Login weibo failed, please try again!"
+msgstr ""

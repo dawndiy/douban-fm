@@ -26,19 +26,19 @@ def build_click():
     print("Copying files...", end="")
 
     shutil.rmtree("build", ignore_errors=True)
-    # os.mkdir("build")
-    os.makedirs("build/lib/")
+    os.mkdir("build")
+    # os.makedirs("build/lib/")
 
-    shutil.copytree("lib/arm-linux-gnueabihf", "build/lib/arm-linux-gnueabihf")
+    #shutil.copytree("lib/arm-linux-gnueabihf", "build/lib/arm-linux-gnueabihf")
     shutil.copytree("app", "build/app")
     shutil.copy("manifest.json", "build")
     shutil.copy("apparmor.json", "build")
     shutil.copy("{}.desktop".format(app_name), "build")
-    shutil.copy("redsocks.conf", "build")
-    shutil.copy("chnroute.txt", "build")
+    shutil.copy("channels.json", "build")
+    shutil.copy("{}.png".format(app_name), "build")
 
-    translations_mo()
-    shutil.copytree("share", "build/share")
+    # translations_mo()
+    # shutil.copytree("share", "build/share")
 
     print("DONE")
 
