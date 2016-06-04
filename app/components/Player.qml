@@ -245,6 +245,14 @@ Item {
                         }
                     }
                 }
+
+                onErrorChanged: {
+                    console.log("---------------------", error)
+                }
+
+                onErrorStringChanged: {
+                    console.log("-------------**--------", errorString)
+                }
             }
         }
     }

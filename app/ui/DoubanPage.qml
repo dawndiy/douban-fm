@@ -9,7 +9,7 @@ import "../components"
 Page {
     id: doubanPage
 
-    property alias title: header.text
+    //property alias title: header.text
     property var currentSong
     property bool currentLike
     //property alias imageUrl: image.source
@@ -64,14 +64,35 @@ Page {
         return text
     }
 
-    head {
-        contents: DoubanHeader {
-            id: header
-            text: i18n.tr("Douban FM")
-        }
+    header: DoubanHeader {
+        title: i18n.tr("Douban FM")
 
-        actions: [
-            // Share
+        leadingActionBar.actions: [
+            Action {
+                text: i18n.tr("Douban FM")
+                onTriggered: {
+                    tabs.selectedTabIndex = 0
+                }
+            },
+            Action {
+                text: i18n.tr("Channels")
+                onTriggered: {
+                    if (!networkingStatus()) {
+                        notification(i18n.tr("No Network!"));
+                        return
+                    }
+                    tabs.selectedTabIndex = 1
+                }
+            },
+            Action {
+                text: i18n.tr("Settings")
+                onTriggered: {
+                    tabs.selectedTabIndex = 2
+                }
+            }
+        ]
+
+        trailingActionBar.actions: [
             Action {
                 iconName: "share"
                 text: i18n.tr("Share")
@@ -90,19 +111,15 @@ Page {
                     }
                     pageStack.push(Qt.resolvedUrl("SharePage.qml"));
                 }
-            },
-
-            Action {
-                iconName: "save"
-                text: i18n.tr("Save")
-                onTriggered: {
-                }
             }
-
+            // ,
             // Action {
-            //     iconName: "note"
-            //     text: i18n.tr("Note")
+            //     iconName: "info"
+            //     text: i18n.tr("Test")
             //     onTriggered: {
+            //         var text = "Test Text --afasodaidsf\nasdofifj"
+            //         var noti = Qt.createComponent(Qt.resolvedUrl("../components/SnackBar.qml"))
+            //         noti.createObject(root, {text: text, duration: duration})
             //     }
             // }
         ]
@@ -113,7 +130,7 @@ Page {
         id: channelName
         anchors {
             horizontalCenter: parent.horizontalCenter
-            top: parent.top
+            top: doubanPage.header.bottom
             topMargin: units.gu(2)
         }
         text: networkingStatus() ? DoubanChannels.channelByID(Number(player.currentMetaChannelID)).name : i18n.tr("Offline")
@@ -125,7 +142,7 @@ Page {
         id: imageLoader
         asynchronous: true
         anchors {
-            top: parent.top
+            top: doubanPage.header.bottom
             topMargin: units.gu(6)
             left: parent.left
             leftMargin: units.gu(5)
@@ -234,7 +251,7 @@ Page {
                 if (player.playbackState == MediaPlayer.PausedState) {
                     return "#CCCCCC"
                 }
-                return player.currentMetaLike ? UbuntuColors.red : UbuntuColors.lightGrey
+                return player.currentMetaLike ? UbuntuColors.red : "#4a4a4a"
             }
             MouseArea {
                 anchors.fill: parent
@@ -258,7 +275,7 @@ Page {
             width: units.gu(6)
             height: units.gu(6)
             name: "edit-delete"
-            color: player.playbackState == MediaPlayer.PausedState ? "#CCCCCC" : UbuntuColors.lightGrey
+            color: player.playbackState == MediaPlayer.PausedState ? "#CCCCCC" : "#4a4a4a"
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
@@ -281,7 +298,7 @@ Page {
             width: units.gu(6)
             height: units.gu(6)
             name: "media-skip-forward"
-            color: player.playbackState == MediaPlayer.PausedState ? "#CCCCCC" : UbuntuColors.lightGrey
+            color: player.playbackState == MediaPlayer.PausedState ? "#CCCCCC" : "#4a4a4a"
             MouseArea {
                 anchors.fill: parent
                 onClicked: {

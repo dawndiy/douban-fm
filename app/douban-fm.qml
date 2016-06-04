@@ -32,7 +32,6 @@ MainView {
 
     Component.onCompleted: {
         pageStack.push(tabs)
-        console.log("**************", pageStack.currentPage, pageStack.currentPage.showToolbar)
         console.debug("[DoubanUser]", isLoginDouban());
         console.debug("[WeiboUser]", isLoginWeibo());
         offlineMusicList = storage.getMusicList()
@@ -43,7 +42,7 @@ MainView {
      * Show a notification
      */
     function notification(text, duration) {
-        var noti = Qt.createComponent(Qt.resolvedUrl("components/Notification.qml"))
+        var noti = Qt.createComponent(Qt.resolvedUrl("components/SnackBar.qml"))
         noti.createObject(root, {text: text, duration: duration})
     }
 
@@ -53,6 +52,7 @@ MainView {
     function networkingStatus() {
         console.log(NetworkingStatus.online, IsDesktop)
         return NetworkingStatus.online || IsDesktop;
+        // return false
     }
 
     /**
@@ -199,41 +199,51 @@ MainView {
 
         Tabs {
             id: tabs
+            anchors.fill: parent
 
             property bool showToolbar: (currentPage.showToolbar || currentPage.showToolbar === undefined) ? true : false
 
             Tab {
                 id: doubanTab
-                title: page.title
-                page: DoubanPage {
-                    id: doubanPage
+                title: i18n.tr("Douban FM")
+                page: Loader {
+                    property bool showToolbar: false
+                    parent: doubanTab
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    source: Qt.resolvedUrl("ui/DoubanPage.qml")
                 }
             }
 
             Tab {
                 id: channelTab
-                title: page.title
-                page: ChannelPage {
-                    id: channelPage
-                }
-            }
-
-            Tab {
-                id: accountTab
-                title: page.title
-                page: AccountPage {
-                    id: accountPage
+                title: i18n.tr("Channels")
+                page: Loader {
+                    property bool showToolbar: true
+                    parent: channelTab
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    source: Qt.resolvedUrl("ui/ChannelPage.qml")
                 }
             }
 
             Tab {
                 id: settingsTab
-                title: page.title
-                page: SettingsPage {
-                    id: settingsPage
+                title: i18n.tr("Settings")
+                page: Loader {
+                    property bool showToolbar: true
+                    parent: settingsTab
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    source: Qt.resolvedUrl("ui/SettingsPage.qml")
                 }
             }
-
         }
     }
 

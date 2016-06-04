@@ -7,13 +7,16 @@ Item {
     signal musicLoaded(var music)
     signal channelChanged(var music)
     signal musicBanned(var music)
+    signal loginCompleted(var result)
 
     onCaptchaImageLoaded: {
         console.log("[Signal onCaptchaImageLoaded]", captcha_id)
     }
 
     onMusicLoaded: {
-        console.log("[Signal onSongLoaded]", music.title)
+        if (music) {
+            console.log("[Signal onSongLoaded]", music.title)
+        }
     }
 
     onChannelChanged: {
@@ -24,9 +27,10 @@ Item {
         console.log("[Signal onSongBanned]", music.title)
     }
 
-    function getVerificationCode() {
-        DoubanUser.getVerificationCode()
+    onLoginCompleted: {
+        console.log("[Signal onLoginCompleted]", result.result)
     }
+
 
     /**
      * go-qml can not emit signal from go side,

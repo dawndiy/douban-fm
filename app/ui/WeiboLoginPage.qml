@@ -4,8 +4,9 @@ import Ubuntu.Web 0.2
 import "../components"
 
 Page {
+    id: weiboLoginPage
 
-    property alias title: header.text
+    property bool showToolbar: false
     property alias url: webView.url
 
     signal loginSuccess()
@@ -31,17 +32,18 @@ Page {
         }
     }
 
-    head {
-        contents: DoubanHeader {
-            id: header
-            text: i18n.tr("Login Sina Weibo")
-            source: Qt.resolvedUrl("../images/weibo_64x64.png")
-        }
+    header: DoubanHeader {
+        title: i18n.tr("Login Sina Weibo")
     }
 
     WebView {
         id: webView
-        anchors.fill: parent
+        anchors {
+            top: weiboLoginPage.header.bottom
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+        }
         onLoadingChanged: {
             console.debug("[Signal: LoadingChanged]" + url)
             var str = String(url);
@@ -54,6 +56,7 @@ Page {
             } else if (str.indexOf("error_code") > -1) {
                 url = "";
                 loginFailed();
+                notification(i18n.tr("Login weibo failed!"))
                 pageStack.pop();
             }
         }

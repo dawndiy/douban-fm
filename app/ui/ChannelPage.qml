@@ -3,21 +3,41 @@ import Ubuntu.Components 1.3
 import "../components"
 
 Page {
+    id: channelPage
 
-    property alias title: header.text
+    header: DoubanHeader {
+        title: i18n.tr("Channels")
 
-    head {
-        contents: DoubanHeader {
-            id: header
-            text: i18n.tr("Channels")
-        }
+        leadingActionBar.actions: [
+            Action {
+                text: i18n.tr("Douban FM")
+                onTriggered: {
+                    tabs.selectedTabIndex = 0
+                }
+            },
+            Action {
+                text: i18n.tr("Channels")
+                onTriggered: {
+                    tabs.selectedTabIndex = 1
+                }
+            },
+            Action {
+                text: i18n.tr("Settings")
+                onTriggered: {
+                    tabs.selectedTabIndex = 2
+                }
+            }
+        ]
     }
 
     ChannelList {
         id: channelList
         anchors {
             bottomMargin: musicToolbar.visible ? musicToolbar.height : 0
-            fill: parent
+            top: channelPage.header.bottom
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
         }
         selectedIndex: player.currentMetaChannelIndex
 

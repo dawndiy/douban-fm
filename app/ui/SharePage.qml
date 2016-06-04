@@ -3,8 +3,9 @@ import Ubuntu.Components 1.3
 import "../components"
 
 Page {
+    id: sharePage
 
-    property alias title: header.text
+    property bool showToolbar: false
 
     /**
      * Post weibo to Share current music
@@ -40,15 +41,10 @@ Page {
         return str;
     }
 
+    header: DoubanHeader {
+        title: i18n.tr("Share to Sina Weibo")
 
-    head {
-        contents: DoubanHeader {
-            id: header
-            text: "Share"
-            source: Qt.resolvedUrl("../images/weibo_64x64.png")
-        }
-        actions: [
-            // Post
+        trailingActionBar.actions: [
             Action {
                 iconName: "ok"
                 text: i18n.tr("ok")
@@ -63,7 +59,12 @@ Page {
     Flickable {
         id: flickable
 
-        anchors.fill: parent
+        anchors {
+            top: sharePage.header.bottom
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+        }
         contentHeight: column.height
         contentWidth: parent.width
 
@@ -78,12 +79,6 @@ Page {
                 leftMargin: units.gu(2)
                 right: parent.right
                 rightMargin: units.gu(2)
-            }
-
-            Label {
-                id: shareLabel
-                text: i18n.tr("<b>Share to Sina Weibo:</b>")
-                font.pixelSize: FontUtils.sizeToPixels("large")
             }
 
             TextArea {

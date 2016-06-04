@@ -1,34 +1,16 @@
 import QtQuick 2.4
 import Ubuntu.Components 1.3
 
-Item {
+PageHeader {
+    // StyleHints {
+    //     foregroundColor: "#357d43"
+    //     // foregroundColor: "#6bbd7a"
+    //     backgroundColor: "#fef0c3"
+    //     dividerColor: "#edf4ed"
+    // }
 
-    property alias text: text.text
-    property alias source: image.source
+    opacity: 0.9
 
-    height: units.gu(7)
-
-    Image {
-        id: image
-        source: Qt.resolvedUrl("../images/logo.png");
-        asynchronous: true
-        anchors {
-            left: parent.left
-            verticalCenter: parent.verticalCenter
-        }
-        width: units.gu(4)
-        height: units.gu(4)
-    }
-
-    Text {
-        id: text
-        text: ""
-        font.pixelSize: FontUtils.sizeToPixels("large")
-        anchors {
-            left: image.right
-            leftMargin: units.gu(1)
-            verticalCenter: parent.verticalCenter
-        }
-    }
-
+    // leadingActionBar.delegate: DoubanHeaderButton {}
+    // trailingActionBar.delegate: DoubanHeaderButton {}
 }

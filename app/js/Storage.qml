@@ -74,6 +74,22 @@ Item {
         });
         return user;
     }
+
+    function getDoubanUser2(cb) {
+        openDB();
+        db.transaction(function(tx) {
+            tx.executeSql("create table if not exists user(id text, uid text, name text, expires text, dbcl2 text)");
+            var user;
+            var rs = tx.executeSql("select uid, id, name, expires, dbcl2 from user");
+            if (rs.rows.length != 0) {
+                user = rs.rows.item(0);
+                cb(user)
+            } else {
+                cb(null)
+            }
+        });
+    }
+
     /**
      * Delete Douban user
      */

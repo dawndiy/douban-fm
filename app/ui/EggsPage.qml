@@ -3,9 +3,11 @@ import Ubuntu.Components 1.3
 
 import "../components"
 
-Page {
 
-    property alias title: header.text
+Page {
+    id: eggsPage
+
+    property bool showToolbar: false
     property int currentIndex: 0
 
     function getPic() {
@@ -27,16 +29,18 @@ Page {
         return "../images/" + lst[currentIndex];
     }
 
-    head {
-        contents: DoubanHeader {
-            id: header
-            text: "Ubuntu Beijing Hackathon"
-        }
+    header: DoubanHeader {
+        title: "Ubuntu Beijing Hackation"
     }
 
     CrossFadeImage {
         id: fadeImage
-        anchors.fill: parent
+        anchors {
+            top: eggsPage.header.bottom
+            bottom: parent.bottom
+            left: parent.left
+            right: parent.right
+        }
         fadeStyle: "cross"
         source: "../images/ubuntu-01.jpg"
     }

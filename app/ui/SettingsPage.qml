@@ -1,6 +1,6 @@
 import QtQuick 2.4
 import Ubuntu.Components 1.3
-import Ubuntu.Components.ListItems 1.0
+import Ubuntu.Components.ListItems 1.3
 import Ubuntu.Components.Popups 1.0
 import "../components"
 
@@ -9,34 +9,47 @@ Page {
 
     id: settingsPage
 
-    property alias title: header.text
+    header: DoubanHeader {
 
-    head {
-        contents: DoubanHeader {
-            id: header
-            text: i18n.tr("Settings")
-        }
+        title: i18n.tr("Settings")
 
-        actions: [
+        leadingActionBar.actions: [
+            Action {
+                text: i18n.tr("Douban FM")
+                onTriggered: {
+                    tabs.selectedTabIndex = 0
+                }
+            },
+            Action {
+                text: i18n.tr("Channels")
+                onTriggered: {
+                    tabs.selectedTabIndex = 1
+                }
+            },
+            Action {
+                text: i18n.tr("Settings")
+                onTriggered: {
+                    tabs.selectedTabIndex = 2
+                }
+            }
+        ]
+
+        trailingActionBar.actions: [
             Action {
                 iconName: "info"
                 text: i18n.tr("Info")
                 onTriggered: {
-                    PopupUtils.open(Qt.resolvedUrl("../components/AboutDialog.qml"))
+                    // PopupUtils.open(Qt.resolvedUrl("../components/AboutDialog.qml"))
+                    pageStack.push(Qt.resolvedUrl("AboutPage.qml"))
                 }
             }
         ]
     }
 
-    Component {
-        id: weiboLoginPage
-        WeiboLoginPage {
-            onLoginSuccess: {
-                loginWeiboLabel.text = storage.getWeiboUser().screen_name;
-            }
-            onLoginFailed: {
-                notification(i18n.tr("Login weibo failed!"))
-            }
+    onVisibleChanged: {
+        if (visible) {
+            loginWeiboLabel.text = isLoginWeibo() ? storage.getWeiboUser().screen_name : i18n.tr("Login Sina Weibo")
+            loginDoubanLabel.text = isLoginDouban()? storage.getDoubanUser().name : i18n.tr("Login Douban FM")
         }
     }
 
@@ -72,7 +85,7 @@ Page {
     Component {
         id: logoutDoubanDialog
         LogoutDialog{
-            text: "Logout Douban Account?"
+            text: i18n.tr("Logout Douban Account?")
             onConfirm: {
                 storage.clearDoubanUser();
                 DoubanUser.logout();
@@ -84,7 +97,7 @@ Page {
     Component {
         id: logoutWeiboDialog
         LogoutDialog{
-            text: "Logout Weibo Account?"
+            text: i18n.tr("Logout Weibo Account?")
             onConfirm: {
                 storage.clearWeiboUser();
                 loginWeiboLabel.text = i18n.tr("Login Sina Weibo");
@@ -95,7 +108,12 @@ Page {
     Flickable {
         id: flickable
 
-        anchors.fill: parent
+        anchors {
+            top: settingsPage.header.bottom
+            left: parent.left
+            right: parent.right
+            bottom: parent.bottom
+        }
         contentHeight: settingsColumn.height
         contentWidth: parent.width
 
@@ -140,7 +158,8 @@ Page {
                             notification(i18n.tr("No network!"));
                             return;
                         }
-                        PopupUtils.open(Qt.resolvedUrl("../components/LoginDialog.qml"));
+                        // PopupUtils.open(Qt.resolvedUrl("../components/LoginDialog.qml"));
+                        pageStack.push(Qt.resolvedUrl("AccountPage.qml"))
                     } else {
                         PopupUtils.open(logoutDoubanDialog);
                     }
@@ -175,7 +194,8 @@ Page {
                             notification(i18n.tr("No network!"));
                             return;
                         }
-                        pageStack.push(weiboLoginPage);
+                        // pageStack.push(weiboLoginPage);
+                        pageStack.push(Qt.resolvedUrl("WeiboLoginPage.qml"))
                     } else {
                         PopupUtils.open(logoutWeiboDialog);
                     }
