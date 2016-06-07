@@ -1,5 +1,6 @@
 [Desktop Entry]
 Name=Douban FM
+Name[zh_CN]=豆瓣FM
 Exec=douban-fm
 Icon=douban-fm.png
 Terminal=false
