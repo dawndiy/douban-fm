@@ -50,6 +50,7 @@ Page {
         if (visible) {
             loginWeiboLabel.text = isLoginWeibo() ? storage.getWeiboUser().screen_name : i18n.tr("Login Sina Weibo")
             loginDoubanLabel.text = isLoginDouban()? storage.getDoubanUser().name : i18n.tr("Login Douban FM")
+            sync_count.text = DoubanMusic.syncCount()
         }
     }
 

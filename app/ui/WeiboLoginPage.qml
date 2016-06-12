@@ -58,6 +58,7 @@ Page {
                 url = "";
                 loginFailed();
                 notification(i18n.tr("Login weibo failed!"))
+                webView.destroy();
                 pageStack.pop();
             }
         }
