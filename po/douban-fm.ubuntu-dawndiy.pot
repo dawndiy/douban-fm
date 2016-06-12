@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: douban-fm.ubuntu-dawndiy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-12 16:30+0800\n"
+"POT-Creation-Date: 2016-06-12 16:57+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -196,6 +196,10 @@ msgstr ""
 
 #: app/ui/SettingsPage.qml:269
 msgid "Clear offline music"
+msgstr ""
+
+#: app/ui/ChannelPage.qml:48
+msgid "Please login Douban account!"
 msgstr ""
 
 #: app/ui/AccountPage.qml:17

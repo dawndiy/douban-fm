@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: douban-fm.ubuntu-dawndiy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-12 16:30+0800\n"
-"PO-Revision-Date: 2016-06-12 16:45+0800\n"
+"POT-Creation-Date: 2016-06-12 16:57+0800\n"
+"PO-Revision-Date: 2016-06-12 16:58+0800\n"
 "Last-Translator: DawnDIY <chenglu1990@gmail.com>\n"
 "Language-Team: Chinese (simplified)\n"
 "Language: zh_CN\n"
@@ -198,6 +198,10 @@ msgstr "摇一摇播放下一首"
 #: app/ui/SettingsPage.qml:269
 msgid "Clear offline music"
 msgstr "清除离线音乐"
+
+#: app/ui/ChannelPage.qml:48
+msgid "Please login Douban account!"
+msgstr "请先登录豆瓣帐号！"
 
 #: app/ui/AccountPage.qml:17
 msgid "Login Douban"

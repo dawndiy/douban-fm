@@ -13,6 +13,7 @@ Page {
     signal loginFailed()
 
     Component.onCompleted: {
+        console.log("webview")
         webView.url = "https://api.weibo.com/oauth2/authorize?client_id=" + Weibo.key + "&response_type=code&redirect_uri=https://api.weibo.com/oauth2/default.html&display=mobile"
     }
 

@@ -6,4 +6,5 @@ Icon=douban-fm.png
 Terminal=false
 Type=Application
 X-Ubuntu-Touch=true
+X-Ubuntu-Splash-Color=#FFF
 

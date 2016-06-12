@@ -38,7 +38,7 @@ def build_click():
     shutil.copy("channels.json", "build")
     shutil.copy("{}.png".format(app_name), "build")
 
-    translations_mo()
+    translation_mo()
     shutil.copytree("share", "build/share")
 
     print("DONE")

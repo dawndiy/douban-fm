@@ -45,7 +45,7 @@ Page {
             console.debug("[Action: Channel]", index)
 
             if (index == 1 && !isLoginDouban()) {
-                notification("Please login Douban account!");
+                notification(i18n.tr("Please login Douban account!"));
                 return;
             }
 
