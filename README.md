@@ -20,6 +20,6 @@ An unofficial client of Douban FM. You can select the channels you like to play 
 ## TODO
 
 - review all codes
-- improve offline music store
+- ~~improve offline music store~~
 - add lyrics
 - add download
