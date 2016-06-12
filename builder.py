@@ -10,6 +10,7 @@ from glob import glob
 
 
 app_name = "douban-fm"
+nick_name = "ubuntu-dawndiy"
 package_name = "{}.ubuntu-dawndiy".format(app_name)
 build_framework = "ubuntu-sdk-15.04"
 build_serise = "vivid"
@@ -37,8 +38,8 @@ def build_click():
     shutil.copy("channels.json", "build")
     shutil.copy("{}.png".format(app_name), "build")
 
-    # translations_mo()
-    # shutil.copytree("share", "build/share")
+    translations_mo()
+    shutil.copytree("share", "build/share")
 
     print("DONE")
 
@@ -155,15 +156,27 @@ def translation_po(language_code):
     subprocess.run(command, shell=True)
 
 
-def translations_mo():
+def translation_po_update():
     """
-    Generate mo files
+    Update PO files
+    merging POT into PO
     """
 
     lst = glob("po/*.po")
     for file in lst:
+        command = "msgmerge -vU {file_name} po/{package_name}.pot".format(file_name=file, package_name=package_name)
+        subprocess.run(command, shell=True)
+
+
+def translation_mo():
+    """
+    Generate mo files
+    """
+
+    shutil.rmtree("share", ignore_errors=True)
+    lst = glob("po/*.po")
+    for file in lst:
         code = file.split(".")[0][3:]
-        shutil.rmtree("share", ignore_errors=True)
         os.makedirs("share/locale/{}/LC_MESSAGES".format(code))
         command = "msgfmt po/{code}.po -o share/locale/{code}/LC_MESSAGES/{package}.mo".format(code=code, package=package_name)
         subprocess.run(command, shell=True)
@@ -184,7 +197,7 @@ if __name__ == "__main__":
 
     click_find()
     parser = argparse.ArgumentParser()
-    parser.add_argument("operation", type=str, choices=["build", "install", "run", "update-translations"])
+    parser.add_argument("operation", type=str, choices=["build", "install", "run", "update-translations", "update-po", "update-mo"])
     args = parser.parse_args()
 
     if args.operation == "build":
@@ -196,3 +209,7 @@ if __name__ == "__main__":
         run_local()
     elif args.operation == "update-translations":
         translation_update()
+    elif args.operation == "update-po":
+        translation_po_update()
+    elif args.operation == "update-mo":
+        translation_mo()

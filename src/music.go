@@ -246,7 +246,7 @@ func (m *Music) SyncMusic(channelID string, count int) {
 					// get music and pic file name
 					_surl := strings.Split(s.URL, "/")
 					_sFName := _surl[len(_surl)-1]
-					musicFilePath := MUSIC_PATH + strings.Split(_sFName, ".")[0]
+					musicFilePath := MUSIC_PATH + strings.Split(_sFName, ".")[0] + ".mp3"
 					_purl := strings.Split(s.Picture, "/")
 					_pFName := _purl[len(_purl)-1]
 					picFilePath := PICTURE_PATH + strings.Split(_pFName, ".")[0]

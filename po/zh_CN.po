@@ -1,251 +1,261 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Chinese translations for douban-fm.ubuntu-dawndiy package
+# douban-fm.ubuntu-dawndiy 软件包的简体中文翻译.
+# Copyright (C) 2016 THE douban-fm.ubuntu-dawndiy'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the douban-fm.ubuntu-dawndiy package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# DawnDIY <chenglu1990@gmail.com>, 2016.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: douban-fm.ubuntu-dawndiy\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-06-12 16:30+0800\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2016-06-12 16:45+0800\n"
+"Last-Translator: DawnDIY <chenglu1990@gmail.com>\n"
+"Language-Team: Chinese (simplified)\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Gtranslator 2.91.7\n"
 
 #: app/components/LogoutDialog.qml:10
 msgid "Log out"
-msgstr ""
+msgstr "注销"
 
 #: app/components/LogoutDialog.qml:11
 msgid "Log out account ?"
-msgstr ""
+msgstr "注销帐号"
 
 #: app/components/LogoutDialog.qml:17
 msgid "logout"
-msgstr ""
+msgstr "注销"
 
 #: app/components/LogoutDialog.qml:26 app/ui/SettingsPage.qml:77
 msgid "cancel"
-msgstr ""
+msgstr "取消"
 
 #: app/components/Player.qml:115 app/components/Player.qml:164
 msgid "No more songs"
-msgstr ""
+msgstr "没有更多歌曲"
 
 #: app/components/ChannelList.qml:20 app/douban-fm.qml:222
 #: app/ui/SettingsPage.qml:24 app/ui/ChannelPage.qml:9
 #: app/ui/ChannelPage.qml:19 app/ui/DoubanPage.qml:78
 msgid "Channels"
-msgstr ""
+msgstr "频道"
 
 #: app/douban-fm.qml:89
 msgid "Start Sync songs..."
-msgstr ""
+msgstr "开始同步歌曲..."
 
 #: app/douban-fm.qml:103 app/ui/DoubanPage.qml:81 app/ui/DoubanPage.qml:260
 #: app/ui/DoubanPage.qml:283
 msgid "No Network!"
-msgstr ""
+msgstr "没有网络！"
 
 #: app/douban-fm.qml:105
 msgid "Play offline music now..."
-msgstr ""
+msgstr "现在播放离线歌曲..."
 
 #: app/douban-fm.qml:115
 msgid "User authorization expired, please login again."
-msgstr ""
+msgstr "用户验证过期，请重新登录。"
 
 #: app/douban-fm.qml:130
 msgid "Weibo authorization expired, please login again."
-msgstr ""
+msgstr "微博验证过期，请重新登录。"
 
 #: app/douban-fm.qml:146
 #, qt-format
 msgid "Douban-FM played <b>%1</b> songs today"
-msgstr ""
+msgstr "豆瓣FM今日播放了 <b>%1</b> 首歌曲"
 
 #: app/douban-fm.qml:147
 msgid "No songs Douban-FM played today"
-msgstr ""
+msgstr "今日豆瓣FM没有播放歌曲"
 
 #: app/douban-fm.qml:208 app/ui/AboutPage.qml:112 app/ui/SettingsPage.qml:18
 #: app/ui/ChannelPage.qml:13 app/ui/DoubanPage.qml:68 app/ui/DoubanPage.qml:72
 msgid "Douban FM"
-msgstr ""
+msgstr "豆瓣FM"
 
 #: app/douban-fm.qml:236 app/ui/SettingsPage.qml:14 app/ui/SettingsPage.qml:30
 #: app/ui/SettingsPage.qml:205 app/ui/ChannelPage.qml:25
 #: app/ui/DoubanPage.qml:88
 msgid "Settings"
-msgstr ""
+msgstr "设置"
 
 #: app/ui/AboutPage.qml:11 app/ui/AboutPage.qml:21
 msgid "About"
-msgstr ""
+msgstr "关于"
 
 #: app/ui/AboutPage.qml:24
 msgid "Credits"
-msgstr ""
+msgstr "鸣谢"
 
 #: app/ui/AboutPage.qml:39 app/ui/AboutPage.qml:40
 msgid "Resources"
-msgstr ""
+msgstr "资源"
 
 #: app/ui/AboutPage.qml:39
 msgid "Bugs"
-msgstr ""
+msgstr "Bugs"
 
 #: app/ui/AboutPage.qml:40
 msgid "Contact"
-msgstr ""
+msgstr "联系"
 
 #: app/ui/AboutPage.qml:43
 msgid "Developers"
-msgstr ""
+msgstr "开发者"
 
 #: app/ui/AboutPage.qml:43
 msgid "Founder"
-msgstr ""
+msgstr "创建者"
 
 #: app/ui/AboutPage.qml:46
 msgid "Powered by"
-msgstr ""
+msgstr "基于"
 
 #: app/ui/AboutPage.qml:98
 msgid "★★★ Wow! You find this Easter egg!★★★ "
-msgstr ""
+msgstr "★★★ 哇！你发现彩蛋了！★★★ "
 
 #. TRANSLATORS: Douban FM version number e.g Version 1.0.0
 #: app/ui/AboutPage.qml:118
 #, qt-format
 msgid "Version %1"
-msgstr ""
+msgstr "版本 %1"
 
 #: app/ui/AboutPage.qml:126
 msgid "Douban FM unofficial client for Ubuntu."
-msgstr ""
+msgstr "豆瓣FM Ubuntu非官方客户端。"
 
 #: app/ui/AboutPage.qml:146
 msgid "Released under the terms of the GNU GPL v3"
-msgstr ""
+msgstr "以 GNU GPL v3 条款发布"
 
 #: app/ui/AboutPage.qml:156
 #, qt-format
 msgid "Source code available on %1"
-msgstr ""
+msgstr "在 %1 上提供源代码"
 
 #: app/ui/SettingsPage.qml:40
 msgid "Info"
-msgstr ""
+msgstr "信息"
 
 #: app/ui/SettingsPage.qml:51 app/ui/SettingsPage.qml:103
 #: app/ui/SettingsPage.qml:183 app/ui/WeiboLoginPage.qml:36
 msgid "Login Sina Weibo"
-msgstr ""
+msgstr "登录新浪微博"
 
 #: app/ui/SettingsPage.qml:52 app/ui/SettingsPage.qml:92
 #: app/ui/SettingsPage.qml:153
 msgid "Login Douban FM"
-msgstr ""
+msgstr "登录豆瓣FM"
 
 #: app/ui/SettingsPage.qml:60
 msgid "Clear"
-msgstr ""
+msgstr "清除"
 
 #: app/ui/SettingsPage.qml:61
 msgid "Clear all offline music ?"
-msgstr ""
+msgstr "清除所有离线音乐？"
 
 #: app/ui/SettingsPage.qml:67
 msgid "confirm"
-msgstr ""
+msgstr "确认"
 
 #: app/ui/SettingsPage.qml:88
 msgid "Logout Douban Account?"
-msgstr ""
+msgstr "注销豆瓣帐号？"
 
 #: app/ui/SettingsPage.qml:100
 msgid "Logout Weibo Account?"
-msgstr ""
+msgstr "注销微博帐号？"
 
 #: app/ui/SettingsPage.qml:130
 msgid "Account"
-msgstr ""
+msgstr "帐号"
 
 #: app/ui/SettingsPage.qml:158 app/ui/SettingsPage.qml:193
 #: app/ui/DoubanPage.qml:101
 msgid "No network!"
-msgstr ""
+msgstr "没有网络！"
 
 #: app/ui/SettingsPage.qml:211
 msgid "Allow sync offline music"
-msgstr ""
+msgstr "允许同步离线音乐"
 
 #: app/ui/SettingsPage.qml:227
 msgid "Please login douban account first!"
-msgstr ""
+msgstr "请先登录豆瓣帐号！"
 
 #: app/ui/SettingsPage.qml:244
 msgid "Shake to play next"
-msgstr ""
+msgstr "摇一摇播放下一首"
 
 #: app/ui/SettingsPage.qml:269
 msgid "Clear offline music"
-msgstr ""
+msgstr "清除离线音乐"
 
 #: app/ui/AccountPage.qml:17
 msgid "Login Douban"
-msgstr ""
+msgstr "登录豆瓣"
 
 #: app/ui/AccountPage.qml:80
 msgid "Username/E-Mail"
-msgstr ""
+msgstr "用户名/邮箱"
 
 #: app/ui/AccountPage.qml:91
 msgid "Password"
-msgstr ""
+msgstr "密码"
 
 #: app/ui/AccountPage.qml:122
 msgid "Verification Code"
-msgstr ""
+msgstr "验证码"
 
 #: app/ui/AccountPage.qml:138
 msgid "Log in"
-msgstr ""
+msgstr "登录"
 
 #: app/ui/DoubanPage.qml:98
 msgid "Share"
-msgstr ""
+msgstr "分享"
 
 #: app/ui/DoubanPage.qml:105
 msgid "Please login weibo account first!"
-msgstr ""
+msgstr "请先登录微博帐号！"
 
 #: app/ui/DoubanPage.qml:109
 msgid "No Songs to share."
-msgstr ""
+msgstr "没有可分享的歌曲。"
 
 #: app/ui/DoubanPage.qml:136
 msgid "Offline"
-msgstr ""
+msgstr "离线"
 
 #: app/ui/SharePage.qml:45
 msgid "Share to Sina Weibo"
-msgstr ""
+msgstr "分享到新浪微博"
 
 #: app/ui/SharePage.qml:50
 msgid "ok"
-msgstr ""
+msgstr "确定"
 
 #: app/ui/WeiboLoginPage.qml:31
 msgid "Login weibo failed, please try again!"
-msgstr ""
+msgstr "登录微博失败，请重试！"
 
 #: app/ui/WeiboLoginPage.qml:59
 msgid "Login weibo failed!"
-msgstr ""
+msgstr "登录微博失败！"
+
+#~ msgid "Log in with Douban account"
+#~ msgstr "用豆瓣帐号登录"
+
+#~ msgid "email"
+#~ msgstr "邮箱"
+
+#~ msgid "password"
+#~ msgstr "密码"

@@ -158,7 +158,6 @@ Page {
                             notification(i18n.tr("No network!"));
                             return;
                         }
-                        // PopupUtils.open(Qt.resolvedUrl("../components/LoginDialog.qml"));
                         pageStack.push(Qt.resolvedUrl("AccountPage.qml"))
                     } else {
                         PopupUtils.open(logoutDoubanDialog);
