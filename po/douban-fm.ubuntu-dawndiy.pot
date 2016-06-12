@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: douban-fm.ubuntu-dawndiy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-12 16:57+0800\n"
+"POT-Creation-Date: 2016-06-12 23:16+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgstr ""
 msgid "logout"
 msgstr ""
 
-#: app/components/LogoutDialog.qml:26 app/ui/SettingsPage.qml:77
+#: app/components/LogoutDialog.qml:26 app/ui/SettingsPage.qml:78
 msgid "cancel"
 msgstr ""
 
@@ -79,7 +79,7 @@ msgid "Douban FM"
 msgstr ""
 
 #: app/douban-fm.qml:236 app/ui/SettingsPage.qml:14 app/ui/SettingsPage.qml:30
-#: app/ui/SettingsPage.qml:205 app/ui/ChannelPage.qml:25
+#: app/ui/SettingsPage.qml:206 app/ui/ChannelPage.qml:25
 #: app/ui/DoubanPage.qml:88
 msgid "Settings"
 msgstr ""
@@ -143,58 +143,58 @@ msgstr ""
 msgid "Info"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:51 app/ui/SettingsPage.qml:103
-#: app/ui/SettingsPage.qml:183 app/ui/WeiboLoginPage.qml:36
+#: app/ui/SettingsPage.qml:51 app/ui/SettingsPage.qml:104
+#: app/ui/SettingsPage.qml:184 app/ui/WeiboLoginPage.qml:37
 msgid "Login Sina Weibo"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:52 app/ui/SettingsPage.qml:92
-#: app/ui/SettingsPage.qml:153
+#: app/ui/SettingsPage.qml:52 app/ui/SettingsPage.qml:93
+#: app/ui/SettingsPage.qml:154
 msgid "Login Douban FM"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:60
+#: app/ui/SettingsPage.qml:61
 msgid "Clear"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:61
+#: app/ui/SettingsPage.qml:62
 msgid "Clear all offline music ?"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:67
+#: app/ui/SettingsPage.qml:68
 msgid "confirm"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:88
+#: app/ui/SettingsPage.qml:89
 msgid "Logout Douban Account?"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:100
+#: app/ui/SettingsPage.qml:101
 msgid "Logout Weibo Account?"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:130
+#: app/ui/SettingsPage.qml:131
 msgid "Account"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:158 app/ui/SettingsPage.qml:193
+#: app/ui/SettingsPage.qml:159 app/ui/SettingsPage.qml:194
 #: app/ui/DoubanPage.qml:101
 msgid "No network!"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:211
+#: app/ui/SettingsPage.qml:212
 msgid "Allow sync offline music"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:227
+#: app/ui/SettingsPage.qml:228
 msgid "Please login douban account first!"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:244
+#: app/ui/SettingsPage.qml:245
 msgid "Shake to play next"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:269
+#: app/ui/SettingsPage.qml:270
 msgid "Clear offline music"
 msgstr ""
 
@@ -238,18 +238,22 @@ msgstr ""
 msgid "Offline"
 msgstr ""
 
-#: app/ui/SharePage.qml:45
+#: app/ui/SharePage.qml:32
+msgid "Sharing success!"
+msgstr ""
+
+#: app/ui/SharePage.qml:46
 msgid "Share to Sina Weibo"
 msgstr ""
 
-#: app/ui/SharePage.qml:50
+#: app/ui/SharePage.qml:51
 msgid "ok"
 msgstr ""
 
-#: app/ui/WeiboLoginPage.qml:31
+#: app/ui/WeiboLoginPage.qml:32
 msgid "Login weibo failed, please try again!"
 msgstr ""
 
-#: app/ui/WeiboLoginPage.qml:59
+#: app/ui/WeiboLoginPage.qml:60
 msgid "Login weibo failed!"
 msgstr ""

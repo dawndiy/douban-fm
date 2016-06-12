@@ -29,6 +29,7 @@ Page {
 
         // Do post status
         Weibo.upload(user.access_token, weiboStatus, picUrl);
+        notification(i18n.tr("Sharing success!"))
         pageStack.pop();
     }
 

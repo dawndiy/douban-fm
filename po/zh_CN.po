@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: douban-fm.ubuntu-dawndiy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-12 16:57+0800\n"
-"PO-Revision-Date: 2016-06-12 16:58+0800\n"
+"POT-Creation-Date: 2016-06-12 23:16+0800\n"
+"PO-Revision-Date: 2016-06-12 23:20+0800\n"
 "Last-Translator: DawnDIY <chenglu1990@gmail.com>\n"
 "Language-Team: Chinese (simplified)\n"
 "Language: zh_CN\n"
@@ -30,7 +30,7 @@ msgstr "注销帐号"
 msgid "logout"
 msgstr "注销"
 
-#: app/components/LogoutDialog.qml:26 app/ui/SettingsPage.qml:77
+#: app/components/LogoutDialog.qml:26 app/ui/SettingsPage.qml:78
 msgid "cancel"
 msgstr "取消"
 
@@ -80,7 +80,7 @@ msgid "Douban FM"
 msgstr "豆瓣FM"
 
 #: app/douban-fm.qml:236 app/ui/SettingsPage.qml:14 app/ui/SettingsPage.qml:30
-#: app/ui/SettingsPage.qml:205 app/ui/ChannelPage.qml:25
+#: app/ui/SettingsPage.qml:206 app/ui/ChannelPage.qml:25
 #: app/ui/DoubanPage.qml:88
 msgid "Settings"
 msgstr "设置"
@@ -129,7 +129,7 @@ msgstr "版本 %1"
 
 #: app/ui/AboutPage.qml:126
 msgid "Douban FM unofficial client for Ubuntu."
-msgstr "豆瓣FM Ubuntu非官方客户端。"
+msgstr "Ubuntu版非官方豆瓣FM客户端。"
 
 #: app/ui/AboutPage.qml:146
 msgid "Released under the terms of the GNU GPL v3"
@@ -144,58 +144,58 @@ msgstr "在 %1 上提供源代码"
 msgid "Info"
 msgstr "信息"
 
-#: app/ui/SettingsPage.qml:51 app/ui/SettingsPage.qml:103
-#: app/ui/SettingsPage.qml:183 app/ui/WeiboLoginPage.qml:36
+#: app/ui/SettingsPage.qml:51 app/ui/SettingsPage.qml:104
+#: app/ui/SettingsPage.qml:184 app/ui/WeiboLoginPage.qml:37
 msgid "Login Sina Weibo"
 msgstr "登录新浪微博"
 
-#: app/ui/SettingsPage.qml:52 app/ui/SettingsPage.qml:92
-#: app/ui/SettingsPage.qml:153
+#: app/ui/SettingsPage.qml:52 app/ui/SettingsPage.qml:93
+#: app/ui/SettingsPage.qml:154
 msgid "Login Douban FM"
 msgstr "登录豆瓣FM"
 
-#: app/ui/SettingsPage.qml:60
+#: app/ui/SettingsPage.qml:61
 msgid "Clear"
 msgstr "清除"
 
-#: app/ui/SettingsPage.qml:61
+#: app/ui/SettingsPage.qml:62
 msgid "Clear all offline music ?"
 msgstr "清除所有离线音乐？"
 
-#: app/ui/SettingsPage.qml:67
+#: app/ui/SettingsPage.qml:68
 msgid "confirm"
 msgstr "确认"
 
-#: app/ui/SettingsPage.qml:88
+#: app/ui/SettingsPage.qml:89
 msgid "Logout Douban Account?"
 msgstr "注销豆瓣帐号？"
 
-#: app/ui/SettingsPage.qml:100
+#: app/ui/SettingsPage.qml:101
 msgid "Logout Weibo Account?"
 msgstr "注销微博帐号？"
 
-#: app/ui/SettingsPage.qml:130
+#: app/ui/SettingsPage.qml:131
 msgid "Account"
 msgstr "帐号"
 
-#: app/ui/SettingsPage.qml:158 app/ui/SettingsPage.qml:193
+#: app/ui/SettingsPage.qml:159 app/ui/SettingsPage.qml:194
 #: app/ui/DoubanPage.qml:101
 msgid "No network!"
 msgstr "没有网络！"
 
-#: app/ui/SettingsPage.qml:211
+#: app/ui/SettingsPage.qml:212
 msgid "Allow sync offline music"
 msgstr "允许同步离线音乐"
 
-#: app/ui/SettingsPage.qml:227
+#: app/ui/SettingsPage.qml:228
 msgid "Please login douban account first!"
 msgstr "请先登录豆瓣帐号！"
 
-#: app/ui/SettingsPage.qml:244
+#: app/ui/SettingsPage.qml:245
 msgid "Shake to play next"
 msgstr "摇一摇播放下一首"
 
-#: app/ui/SettingsPage.qml:269
+#: app/ui/SettingsPage.qml:270
 msgid "Clear offline music"
 msgstr "清除离线音乐"
 
@@ -239,19 +239,23 @@ msgstr "没有可分享的歌曲。"
 msgid "Offline"
 msgstr "离线"
 
-#: app/ui/SharePage.qml:45
+#: app/ui/SharePage.qml:32
+msgid "Sharing success!"
+msgstr "分享成功！"
+
+#: app/ui/SharePage.qml:46
 msgid "Share to Sina Weibo"
 msgstr "分享到新浪微博"
 
-#: app/ui/SharePage.qml:50
+#: app/ui/SharePage.qml:51
 msgid "ok"
 msgstr "确定"
 
-#: app/ui/WeiboLoginPage.qml:31
+#: app/ui/WeiboLoginPage.qml:32
 msgid "Login weibo failed, please try again!"
 msgstr "登录微博失败，请重试！"
 
-#: app/ui/WeiboLoginPage.qml:59
+#: app/ui/WeiboLoginPage.qml:60
 msgid "Login weibo failed!"
 msgstr "登录微博失败！"
 
