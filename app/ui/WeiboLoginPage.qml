@@ -30,7 +30,6 @@ Page {
     signal loginFailed()
 
     Component.onCompleted: {
-        console.log("webview")
         webView.url = "https://api.weibo.com/oauth2/authorize?client_id=" + Weibo.key + "&response_type=code&redirect_uri=https://api.weibo.com/oauth2/default.html&display=mobile"
     }
 
@@ -63,7 +62,7 @@ Page {
             right: parent.right
         }
         onLoadingChanged: {
-            console.debug("[Signal: LoadingChanged]" + url)
+            // console.debug("[Signal: LoadingChanged]" + url)
             var str = String(url);
             if (str.indexOf("https://api.weibo.com/oauth2/default.html?code=") > -1) {
                 var code = str.split("code=")[1]
