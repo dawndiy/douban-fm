@@ -47,7 +47,7 @@ Page {
     }
 
     header: DoubanHeader {
-        title: "Ubuntu Beijing Hackation"
+        title: "Ubuntu Beijing Hackathon"
     }
 
     CrossFadeImage {
