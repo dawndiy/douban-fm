@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: douban-fm.ubuntu-dawndiy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-12 23:16+0800\n"
+"POT-Creation-Date: 2016-06-13 23:49+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,243 +17,247 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: app/components/LogoutDialog.qml:10
+#: app/components/LogoutDialog.qml:27
 msgid "Log out"
 msgstr ""
 
-#: app/components/LogoutDialog.qml:11
+#: app/components/LogoutDialog.qml:28
 msgid "Log out account ?"
 msgstr ""
 
-#: app/components/LogoutDialog.qml:17
+#: app/components/LogoutDialog.qml:34
 msgid "logout"
 msgstr ""
 
-#: app/components/LogoutDialog.qml:26 app/ui/SettingsPage.qml:78
+#: app/components/LogoutDialog.qml:43 app/ui/SettingsPage.qml:95
 msgid "cancel"
 msgstr ""
 
-#: app/components/Player.qml:115 app/components/Player.qml:164
+#: app/components/Player.qml:132 app/components/Player.qml:181
 msgid "No more songs"
 msgstr ""
 
-#: app/components/ChannelList.qml:20 app/douban-fm.qml:222
-#: app/ui/SettingsPage.qml:24 app/ui/ChannelPage.qml:9
-#: app/ui/ChannelPage.qml:19 app/ui/DoubanPage.qml:78
+#: app/components/ChannelList.qml:37 app/douban-fm.qml:239
+#: app/ui/SettingsPage.qml:41 app/ui/ChannelPage.qml:26
+#: app/ui/ChannelPage.qml:36 app/ui/DoubanPage.qml:95
 msgid "Channels"
 msgstr ""
 
-#: app/douban-fm.qml:89
+#: app/douban-fm.qml:106
 msgid "Start Sync songs..."
 msgstr ""
 
-#: app/douban-fm.qml:103 app/ui/DoubanPage.qml:81 app/ui/DoubanPage.qml:260
-#: app/ui/DoubanPage.qml:283
+#: app/douban-fm.qml:120 app/ui/DoubanPage.qml:98 app/ui/DoubanPage.qml:277
+#: app/ui/DoubanPage.qml:300
 msgid "No Network!"
 msgstr ""
 
-#: app/douban-fm.qml:105
+#: app/douban-fm.qml:122
 msgid "Play offline music now..."
 msgstr ""
 
-#: app/douban-fm.qml:115
+#: app/douban-fm.qml:132
 msgid "User authorization expired, please login again."
 msgstr ""
 
-#: app/douban-fm.qml:130
+#: app/douban-fm.qml:147
 msgid "Weibo authorization expired, please login again."
 msgstr ""
 
-#: app/douban-fm.qml:146
+#: app/douban-fm.qml:163
 #, qt-format
 msgid "Douban-FM played <b>%1</b> songs today"
 msgstr ""
 
-#: app/douban-fm.qml:147
+#: app/douban-fm.qml:164
 msgid "No songs Douban-FM played today"
 msgstr ""
 
-#: app/douban-fm.qml:208 app/ui/AboutPage.qml:112 app/ui/SettingsPage.qml:18
-#: app/ui/ChannelPage.qml:13 app/ui/DoubanPage.qml:68 app/ui/DoubanPage.qml:72
+#: app/douban-fm.qml:225 app/ui/AboutPage.qml:129 app/ui/SettingsPage.qml:35
+#: app/ui/ChannelPage.qml:30 app/ui/DoubanPage.qml:85 app/ui/DoubanPage.qml:89
 msgid "Douban FM"
 msgstr ""
 
-#: app/douban-fm.qml:236 app/ui/SettingsPage.qml:14 app/ui/SettingsPage.qml:30
-#: app/ui/SettingsPage.qml:206 app/ui/ChannelPage.qml:25
-#: app/ui/DoubanPage.qml:88
+#: app/douban-fm.qml:253 app/ui/SettingsPage.qml:31 app/ui/SettingsPage.qml:47
+#: app/ui/SettingsPage.qml:223 app/ui/ChannelPage.qml:42
+#: app/ui/DoubanPage.qml:105
 msgid "Settings"
 msgstr ""
 
-#: app/ui/AboutPage.qml:11 app/ui/AboutPage.qml:21
+#: app/ui/AboutPage.qml:28 app/ui/AboutPage.qml:38
 msgid "About"
 msgstr ""
 
-#: app/ui/AboutPage.qml:24
+#: app/ui/AboutPage.qml:41
 msgid "Credits"
 msgstr ""
 
-#: app/ui/AboutPage.qml:39 app/ui/AboutPage.qml:40
+#: app/ui/AboutPage.qml:56 app/ui/AboutPage.qml:57
 msgid "Resources"
 msgstr ""
 
-#: app/ui/AboutPage.qml:39
+#: app/ui/AboutPage.qml:56
 msgid "Bugs"
 msgstr ""
 
-#: app/ui/AboutPage.qml:40
+#: app/ui/AboutPage.qml:57
 msgid "Contact"
 msgstr ""
 
-#: app/ui/AboutPage.qml:43
+#: app/ui/AboutPage.qml:60
 msgid "Developers"
 msgstr ""
 
-#: app/ui/AboutPage.qml:43
+#: app/ui/AboutPage.qml:60
 msgid "Founder"
 msgstr ""
 
-#: app/ui/AboutPage.qml:46
+#: app/ui/AboutPage.qml:63
 msgid "Powered by"
 msgstr ""
 
-#: app/ui/AboutPage.qml:98
+#: app/ui/AboutPage.qml:115
 msgid "★★★ Wow! You find this Easter egg!★★★ "
 msgstr ""
 
 #. TRANSLATORS: Douban FM version number e.g Version 1.0.0
-#: app/ui/AboutPage.qml:118
+#: app/ui/AboutPage.qml:135
 #, qt-format
 msgid "Version %1"
 msgstr ""
 
-#: app/ui/AboutPage.qml:126
+#: app/ui/AboutPage.qml:143
 msgid "Douban FM unofficial client for Ubuntu."
 msgstr ""
 
-#: app/ui/AboutPage.qml:146
+#: app/ui/AboutPage.qml:163
 msgid "Released under the terms of the GNU GPL v3"
 msgstr ""
 
-#: app/ui/AboutPage.qml:156
+#: app/ui/AboutPage.qml:173
 #, qt-format
 msgid "Source code available on %1"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:40
+#: app/ui/SettingsPage.qml:57
 msgid "Info"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:51 app/ui/SettingsPage.qml:104
-#: app/ui/SettingsPage.qml:184 app/ui/WeiboLoginPage.qml:37
+#: app/ui/SettingsPage.qml:68 app/ui/SettingsPage.qml:121
+#: app/ui/SettingsPage.qml:201 app/ui/WeiboLoginPage.qml:54
 msgid "Login Sina Weibo"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:52 app/ui/SettingsPage.qml:93
-#: app/ui/SettingsPage.qml:154
+#: app/ui/SettingsPage.qml:69 app/ui/SettingsPage.qml:110
+#: app/ui/SettingsPage.qml:171
 msgid "Login Douban FM"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:61
+#: app/ui/SettingsPage.qml:78
 msgid "Clear"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:62
+#: app/ui/SettingsPage.qml:79
 msgid "Clear all offline music ?"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:68
+#: app/ui/SettingsPage.qml:85
 msgid "confirm"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:89
+#: app/ui/SettingsPage.qml:106
 msgid "Logout Douban Account?"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:101
+#: app/ui/SettingsPage.qml:118
 msgid "Logout Weibo Account?"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:131
+#: app/ui/SettingsPage.qml:148
 msgid "Account"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:159 app/ui/SettingsPage.qml:194
-#: app/ui/DoubanPage.qml:101
+#: app/ui/SettingsPage.qml:176 app/ui/SettingsPage.qml:211
+#: app/ui/DoubanPage.qml:118
 msgid "No network!"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:212
+#: app/ui/SettingsPage.qml:229
 msgid "Allow sync offline music"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:228
+#: app/ui/SettingsPage.qml:245
 msgid "Please login douban account first!"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:245
+#: app/ui/SettingsPage.qml:262
 msgid "Shake to play next"
 msgstr ""
 
-#: app/ui/SettingsPage.qml:270
+#: app/ui/SettingsPage.qml:287
 msgid "Clear offline music"
 msgstr ""
 
-#: app/ui/ChannelPage.qml:48
+#: app/ui/ChannelPage.qml:65
 msgid "Please login Douban account!"
 msgstr ""
 
-#: app/ui/AccountPage.qml:17
+#: app/ui/AccountPage.qml:34
 msgid "Login Douban"
 msgstr ""
 
-#: app/ui/AccountPage.qml:80
+#: app/ui/AccountPage.qml:97
 msgid "Username/E-Mail"
 msgstr ""
 
-#: app/ui/AccountPage.qml:91
+#: app/ui/AccountPage.qml:108
 msgid "Password"
 msgstr ""
 
-#: app/ui/AccountPage.qml:122
+#: app/ui/AccountPage.qml:139
 msgid "Verification Code"
 msgstr ""
 
-#: app/ui/AccountPage.qml:138
+#: app/ui/AccountPage.qml:155
 msgid "Log in"
 msgstr ""
 
-#: app/ui/DoubanPage.qml:98
+#: app/ui/DoubanPage.qml:115
 msgid "Share"
 msgstr ""
 
-#: app/ui/DoubanPage.qml:105
+#: app/ui/DoubanPage.qml:122
 msgid "Please login weibo account first!"
 msgstr ""
 
-#: app/ui/DoubanPage.qml:109
+#: app/ui/DoubanPage.qml:126
 msgid "No Songs to share."
 msgstr ""
 
-#: app/ui/DoubanPage.qml:136
+#: app/ui/DoubanPage.qml:153
 msgid "Offline"
 msgstr ""
 
-#: app/ui/SharePage.qml:32
+#: app/ui/SharePage.qml:49
 msgid "Sharing success!"
 msgstr ""
 
-#: app/ui/SharePage.qml:46
+#: app/ui/SharePage.qml:63
 msgid "Share to Sina Weibo"
 msgstr ""
 
-#: app/ui/SharePage.qml:51
+#: app/ui/SharePage.qml:68
 msgid "ok"
 msgstr ""
 
-#: app/ui/WeiboLoginPage.qml:32
+#: app/ui/WeiboLoginPage.qml:49
 msgid "Login weibo failed, please try again!"
 msgstr ""
 
-#: app/ui/WeiboLoginPage.qml:60
+#: app/ui/WeiboLoginPage.qml:77
 msgid "Login weibo failed!"
+msgstr ""
+
+#: app/ui/EggsPage.qml:50
+msgid "Ubuntu Beijing Hackathon"
 msgstr ""
