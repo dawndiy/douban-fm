@@ -131,11 +131,11 @@ MainView {
             if (now > expire) {
                 notification(i18n.tr("User authorization expired, please login again."), 10)
                 storage.clearDoubanUser();
-                return;
-            }
-            DoubanMusic.setDBCL2(user.dbcl2);
-            if (storage.getConfig("sync") == "true" && is_online) {
-                syncMusic("-3")
+            } else {
+                DoubanMusic.setDBCL2(user.dbcl2);
+                if (storage.getConfig("sync") == "true" && is_online) {
+                    syncMusic("-3")
+                }
             }
         }
         if (isLoginWeibo()) {
@@ -146,7 +146,6 @@ MainView {
             if (now > expire+updated) {
                 notification(i18n.tr("Weibo authorization expired, please login again."), 10)
                 storage.clearWeiboUser();
-                return;
             }
         }
 
