@@ -54,7 +54,13 @@ func (m *Music) SkipMusic(sid, position string) {
 		// clear current play list
 		m.Clear()
 		// get a new play list
-		songs, err := doubanfm.PlayListSkip(sid, position, m.CurrentChannelID)
+		var err error
+		var songs []doubanfm.Song
+		if sid == "" {
+			songs, err = doubanfm.PlayListNew(m.CurrentChannelID)
+		} else {
+			songs, err = doubanfm.PlayListSkip(sid, position, m.CurrentChannelID)
+		}
 		if checkLogout(err) != nil || len(songs) == 0 {
 			checkLogout(err)
 			log.Println("[ERROR]: network error ", err)
