@@ -61,7 +61,7 @@ Page {
             left: parent.left
             right: parent.right
         }
-        onLoadingChanged: {
+        onLoadingStateChanged: {
             // console.debug("[Signal: LoadingChanged]" + url)
             var str = String(url);
             if (str.indexOf("https://api.weibo.com/oauth2/default.html?code=") > -1) {
