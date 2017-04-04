@@ -17,13 +17,14 @@
 
 import QtQuick 2.4
 import QtSensors 5.0
+import QtGraphicalEffects 1.0
 import UserMetrics 0.1
 import Ubuntu.Components 1.3
 import Ubuntu.Connectivity 1.0
+import Ubuntu.PerformanceMetrics 0.1
 import "js"
 import "components"
 import "ui"
-import Ubuntu.PerformanceMetrics 0.1
 
 
 MainView {
@@ -195,6 +196,25 @@ MainView {
                 player.skip();
             }
         }
+    }
+
+    CrossFadeImage {
+        id: backImage
+
+        fadeDuration: 500
+        fadeStyle: "cross"
+        source: player.currentMetaArt
+        anchors.fill: parent
+        fillMode: Image.PreserveAspectCrop
+        smooth: true
+        visible: false
+    }
+
+    FastBlur {
+        anchors.fill: backImage
+        source: backImage
+        radius: 48
+        opacity: 0.5
     }
 
     Loader {

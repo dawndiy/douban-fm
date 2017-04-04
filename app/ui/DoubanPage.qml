@@ -151,7 +151,8 @@ Page {
             topMargin: units.gu(2)
         }
         text: networkingStatus() ? DoubanChannels.channelByID(Number(player.currentMetaChannelID)).name : i18n.tr("Offline")
-        color: "grey"
+        style: Text.Raised
+        color: "#222"
     }
 
     // Album Art
@@ -201,6 +202,7 @@ Page {
     Text {
         id: artist
         text: player.currentMetaArtist
+        style: Text.Raised
 
         anchors {
             //top: image.bottom
@@ -228,6 +230,8 @@ Page {
         id: title
         text: player.currentMetaTitle
         font.pixelSize: FontUtils.sizeToPixels("large")
+        font.weight: Font.DemiBold
+        style: Text.Raised
 
         anchors {
             top: album.bottom
@@ -264,13 +268,19 @@ Page {
             width: units.gu(6)
             height: units.gu(6)
             name: "like"
-            color: {
-                if (player.playbackState == MediaPlayer.PausedState) {
-                    return "#CCCCCC"
-                }
-                return player.currentMetaLike ? UbuntuColors.red : "#4a4a4a"
+            color:  player.currentMetaLike ? UbuntuColors.red : "#4a4a4a"
+            opacity: player.playbackState == MediaPlayer.PausedState ? 0.4 : 1
+            Rectangle {
+                anchors.centerIn: parent
+                width: parent.width + units.gu(1)
+                height: width
+                radius: width / 2
+                color: "#EEE"
+                z: -1
+                opacity: likeImageMouseArea.pressed ? 0.5 : 0
             }
             MouseArea {
+                id: likeImageMouseArea
                 anchors.fill: parent
                 onClicked: {
                     if (!networkingStatus()) {
@@ -292,8 +302,19 @@ Page {
             width: units.gu(6)
             height: units.gu(6)
             name: "edit-delete"
-            color: player.playbackState == MediaPlayer.PausedState ? "#CCCCCC" : "#4a4a4a"
+            color: "#4a4a4a"
+            opacity: player.playbackState == MediaPlayer.PausedState ? 0.4 : 1
+            Rectangle {
+                anchors.centerIn: parent
+                width: parent.width + units.gu(1)
+                height: width
+                radius: width / 2
+                color: "#EEE"
+                z: -1
+                opacity: deleteImageMouseArea.pressed ? 0.5 : 0
+            }
             MouseArea {
+                id: deleteImageMouseArea
                 anchors.fill: parent
                 onClicked: {
                     if (!networkingStatus()) {
@@ -315,8 +336,19 @@ Page {
             width: units.gu(6)
             height: units.gu(6)
             name: "media-skip-forward"
-            color: player.playbackState == MediaPlayer.PausedState ? "#CCCCCC" : "#4a4a4a"
+            color: "#4a4a4a"
+            opacity: player.playbackState == MediaPlayer.PausedState ? 0.4 : 1
+            Rectangle {
+                anchors.centerIn: parent
+                width: parent.width + units.gu(1)
+                height: width
+                radius: width / 2
+                color: "#EEE"
+                z: -1
+                opacity: nextImageMouseArea.pressed ? 0.5 : 0
+            }
             MouseArea {
+                id: nextImageMouseArea
                 anchors.fill: parent
                 onClicked: {
                     if (player.playbackState != MediaPlayer.PausedState) {

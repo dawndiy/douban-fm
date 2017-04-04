@@ -127,6 +127,7 @@ Page {
                             font.weight: Font.DemiBold
                             horizontalAlignment: Text.AlignHCenter
                             text: i18n.tr("Douban FM")
+                            style: Text.Raised
                         }
                         Label {
                             width: parent.width
@@ -141,6 +142,7 @@ Page {
                         wrapMode: Text.WordWrap
                         horizontalAlignment: Text.AlignHCenter
                         text: i18n.tr("Douban FM unofficial client for Ubuntu.")
+                        style: Text.Raised
                     }
 
                     Column {

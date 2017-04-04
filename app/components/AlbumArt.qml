@@ -18,6 +18,7 @@
 import QtQuick 2.4
 import QtGraphicalEffects 1.0
 import Ubuntu.Components 1.3
+import QtGraphicalEffects 1.0
 
 Item {
     id: root
@@ -35,8 +36,23 @@ Item {
         fadeStyle: "cross"
         height: parent.height
         width: parent.width
+        fillMode: Image.PreserveAspectCrop
         anchors {
             centerIn: parent
+        }
+
+        layer.enabled: true
+        layer.effect: OpacityMask {
+            maskSource: Item {
+                width: art.width
+                height: art.height
+                Rectangle {
+                    anchors.centerIn: parent
+                    width: Math.min(art.width, art.height)
+                    height: width
+                    radius: Math.min(height, width);
+                }
+            }
         }
 
         MouseArea {
@@ -54,11 +70,10 @@ Item {
 
         visible: false
         anchors {
-            top: art.top
-            left: art.left
+            centerIn: art
         }
-        width: art.width
-        height: art.height
+        width: Math.min(art.width, art.height)
+        height: width
         RadialGradient {
             anchors.fill: parent
             gradient: Gradient {
