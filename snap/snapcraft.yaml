@@ -32,7 +32,7 @@ plugs:
 parts:
   app:
     plugin: go
-    source: ../src
+    source: src
     go-importpath: src
     organize:
       bin/src: bin/douban-fm
@@ -64,15 +64,14 @@ parts:
       - gstreamer1.0-plugins-ugly
   qml:
     plugin: dump
-    source: ../app/
+    source: app/
     organize:
       "*": bin/app/
   assets:
     plugin: dump
-    source: ..
+    source: .
     organize:
       channels.json: bin/channels.json
     stage:
       - bin/channels.json
       - share
-

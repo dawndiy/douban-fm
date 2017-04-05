@@ -7,7 +7,7 @@ config.go
 fm
 
 # snapcraft
-snap/parts
-snap/stage
-snap/prime
+parts
+stage
+prime
 *.snap
