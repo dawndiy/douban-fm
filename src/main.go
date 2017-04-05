@@ -31,7 +31,7 @@ import (
 
 const (
 	ApplicationName    = "douban-fm.ubuntu-dawndiy"
-	ApplicationVersion = "0.2.3"
+	ApplicationVersion = "0.3.0"
 )
 
 var (

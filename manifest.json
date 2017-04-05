@@ -9,7 +9,7 @@
             "desktop":  "douban-fm.desktop"
         }
     },
-    "version": "0.2.3",
+    "version": "0.3.0",
     "maintainer": "DawnDIY <dawndiy.dev@gmail.com>",
     "framework" : "ubuntu-sdk-15.04"
 }
