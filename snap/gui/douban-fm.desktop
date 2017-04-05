@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Terminal=false
+Exec=douban-fm
+Name=Douban FM
+Name[zh_CN]=豆瓣 FM
+Icon=${SNAP}/meta/gui/icon.png

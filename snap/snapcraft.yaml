@@ -1,0 +1,80 @@
+name: douban-fm 
+version: '0.1' # just for humans, typically '1.2+git' or '1.3.2'
+summary: Douban FM for Ubuntu.
+description: |
+  This is my-snap's description. You have a paragraph or two to tell the
+  most important story about your snap. Keep it under 100 words though,
+  we live in tweetspace and your description wants to look good in the snap
+  store.
+
+grade: stable # must be 'stable' to release into candidate/stable channels
+confinement: strict # use 'strict' once you have the right plugs and slots
+
+apps:
+  douban-fm:
+    command: desktop-launch $SNAP/bin/douban-fm
+    environment:
+      GODEBUG: cgocheck=0
+      OXIDE_NO_SANDBOX: 1
+
+    plugs: 
+      - home
+      - unity7
+      - pulseaudio
+      - x11
+      - gsettings
+      - opengl
+      - network
+      - browser-sandbox
+plugs:
+  browser-sandbox:
+    interface: browser-support
+    allow-sandbox: false
+
+parts:
+  douban-fm-backend:
+    plugin: go
+    source: ../src
+    go-importpath: src
+    organize:
+      bin/src: bin/douban-fm
+    build-packages:
+      - qtdeclarative5-dev
+      - qtbase5-private-dev 
+      - qtdeclarative5-private-dev 
+      - libqt5opengl5-dev 
+      - qtdeclarative5-qtquick2-plugin
+    after: 
+      - desktop-qt5
+      - qml
+    stage-packages:
+      - unity-gtk2-module
+      - libcanberra-gtk-module
+      - overlay-scrollbar-gtk2
+      - libgail-3-0
+      - libatk-bridge2.0-0
+      - libatk-adaptor
+      - ubuntu-sdk-libs
+      - qtubuntu-desktop
+      - qml-module-qtsysteminfo
+      - fonts-wqy-microhei
+      - qml-module-ubuntu-connectivity
+      - qml-module-ubuntu-web
+      - gstreamer1.0-plugins-base
+      - gstreamer1.0-plugins-good
+      - gstreamer1.0-plugins-bad
+      - gstreamer1.0-plugins-ugly
+  qml:
+    plugin: dump
+    source: ../app/
+    organize:
+      "*": bin/app/
+  assets:
+    plugin: dump
+    source: ..
+    organize:
+      channels.json: bin/channels.json
+    stage:
+      - bin/channels.json
+      - share
+

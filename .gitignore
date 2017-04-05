@@ -5,3 +5,9 @@ douban-fm.*.click
 *.swp
 config.go
 fm
+
+# snapcraft
+snap/parts
+snap/stage
+snap/prime
+*.snap
