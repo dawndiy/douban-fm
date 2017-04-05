@@ -36,7 +36,7 @@ func GetChannels() *Channels {
 	channels := new(Channels)
 
 	// get list from json file
-	file, err := os.Open("channels.json")
+	file, err := os.Open(CURRENT_PATH + "/channels.json")
 	if err == nil {
 
 		defer file.Close()
@@ -66,6 +66,7 @@ func GetChannels() *Channels {
 
 		// channels.List = chs
 		// channels.Len = len(chs)
+		log.Println(err)
 	}
 
 	return channels

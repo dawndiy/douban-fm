@@ -26,6 +26,7 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"gopkg.in/qml.v1"
+	"path/filepath"
 )
 
 const (
@@ -38,6 +39,7 @@ var (
 	DB_PATH       string
 	MUSIC_PATH    string
 	PICTURE_PATH  string
+	CURRENT_PATH  string
 	root          qml.Object
 	log           *Log.Logger = Log.New(os.Stdout, "", Log.LstdFlags|Log.Lshortfile)
 )
@@ -57,6 +59,8 @@ func init() {
 	if _, err := os.Stat(PICTURE_PATH); os.IsNotExist(err) {
 		os.Mkdir(PICTURE_PATH, os.ModePerm)
 	}
+	CURRENT_PATH, _ = filepath.Abs(filepath.Dir(os.Args[0]))
+
 }
 
 func main() {
@@ -84,9 +88,12 @@ func run() error {
 	if os.Getenv("XDG_DATA_HOME") == "" {
 		isDesktop = true
 	}
+	if os.Getenv("SNAP") != "" {
+		isDesktop = true
+	}
 	context.SetVar("IsDesktop", isDesktop)
 
-	component, err := engine.LoadFile("app/douban-fm.qml")
+	component, err := engine.LoadFile(CURRENT_PATH + "/app/douban-fm.qml")
 	if err != nil {
 		return err
 	}
