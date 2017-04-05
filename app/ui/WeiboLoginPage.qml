@@ -79,4 +79,9 @@ Page {
             }
         }
     }
+
+    ActivityIndicator {
+        anchors.centerIn: parent
+        running: webView.loading
+    }
 }
